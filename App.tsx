@@ -5,6 +5,8 @@ import AppNavigator from './src/AppNavigator';
 import { attachInterceptors } from './src/lib/interceptors';
 import { useAuth } from './src/store/auth';
 
+import { Provider as PaperProvider } from 'react-native-paper';
+
 export default function App() {
   const load = useAuth((s) => s.load);
   const hydrated = useAuth((s) => s.hydrated);
@@ -23,8 +25,10 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <AppNavigator />
-    </NavigationContainer>
+    <PaperProvider>
+      <NavigationContainer>
+        <AppNavigator />
+      </NavigationContainer>
+    </PaperProvider>
   );
 }

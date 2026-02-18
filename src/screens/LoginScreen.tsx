@@ -1,6 +1,6 @@
-// src/screens/LoginScreen.tsx
 import { useState } from 'react';
-import { Alert, Button, SafeAreaView, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, View } from 'react-native';
+import { Button, Text, TextInput } from 'react-native-paper';
 import { useAuth } from '../store/auth';
 
 export default function LoginScreen() {
@@ -12,59 +12,57 @@ export default function LoginScreen() {
   const login = useAuth((s) => s.login);
 
   async function onLogin() {
+    if (loading) return;
+    setLoading(true);
     try {
-      if (!tenant?.trim()) return Alert.alert('Informe o Tenant ID');
-      if (!email?.trim()) return Alert.alert('Informe o e-mail');
-      if (!password) return Alert.alert('Informe a senha');
-
-      setLoading(true);
       await login(tenant.trim(), email.trim().toLowerCase(), password);
-    } catch (err: any) {
-      Alert.alert('Erro ao logar', err?.response?.data?.message ?? String(err));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, padding: 16, gap: 12 }}>
-      <Text style={{ fontSize: 22, fontWeight: '600' }}>Entrar</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1, padding: 20, justifyContent: 'center' }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <View style={{ gap: 14 }}>
+        <Text variant="headlineMedium" style={{ fontWeight: '700' }}>
+          Entrar
+        </Text>
+        <Text variant="bodyMedium" style={{ opacity: 0.7 }}>
+          Acesse sua conta para continuar.
+        </Text>
 
-      <Text style={{ fontWeight: '600' }}>Tenant ID</Text>
-      <TextInput
-        value={tenant}
-        onChangeText={setTenant}
-        autoCapitalize="none"
-        autoCorrect={false}
-        placeholder="default"
-        editable={!loading}
-        style={{ borderWidth: 1, borderColor: '#ccc', padding: 10, borderRadius: 8 }}
-      />
+        <TextInput
+          mode="outlined"
+          label="Tenant"
+          value={tenant}
+          onChangeText={setTenant}
+          autoCapitalize="none"
+        />
 
-      <Text style={{ fontWeight: '600' }}>E-mail</Text>
-      <TextInput
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        autoCorrect={false}
-        keyboardType="email-address"
-        placeholder="admin@local.com"
-        editable={!loading}
-        style={{ borderWidth: 1, borderColor: '#ccc', padding: 10, borderRadius: 8 }}
-      />
+        <TextInput
+          mode="outlined"
+          label="E-mail"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+        />
 
-      <Text style={{ fontWeight: '600' }}>Senha</Text>
-      <TextInput
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        placeholder="123456"
-        editable={!loading}
-        style={{ borderWidth: 1, borderColor: '#ccc', padding: 10, borderRadius: 8 }}
-      />
+        <TextInput
+          mode="outlined"
+          label="Senha"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
 
-      <View style={{ height: 12 }} />
-      <Button title={loading ? 'Entrando...' : 'Entrar'} onPress={onLogin} disabled={loading} />
-    </SafeAreaView>
+        <Button mode="contained" onPress={onLogin} loading={loading} disabled={loading}>
+          Entrar
+        </Button>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
