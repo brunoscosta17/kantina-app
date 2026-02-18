@@ -1,6 +1,5 @@
-// src/screens/LoginScreen.tsx
 import { useState } from 'react';
-import { Alert, Button, SafeAreaView, Text, TextInput, View } from 'react-native';
+import { Button, H2, Input, Paragraph, YStack } from 'tamagui';
 import { useAuth } from '../store/auth';
 
 export default function LoginScreen() {
@@ -12,59 +11,35 @@ export default function LoginScreen() {
   const login = useAuth((s) => s.login);
 
   async function onLogin() {
+    if (loading) return;
+    setLoading(true);
     try {
-      if (!tenant?.trim()) return Alert.alert('Informe o Tenant ID');
-      if (!email?.trim()) return Alert.alert('Informe o e-mail');
-      if (!password) return Alert.alert('Informe a senha');
-
-      setLoading(true);
       await login(tenant.trim(), email.trim().toLowerCase(), password);
-    } catch (err: any) {
-      Alert.alert('Erro ao logar', err?.response?.data?.message ?? String(err));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, padding: 16, gap: 12 }}>
-      <Text style={{ fontSize: 22, fontWeight: '600' }}>Entrar</Text>
+    <YStack f={1} jc="center" p="$5" gap="$4">
+      <YStack gap="$2">
+        <H2>Entrar</H2>
+        <Paragraph opacity={0.7}>Acesse sua conta para continuar.</Paragraph>
+      </YStack>
 
-      <Text style={{ fontWeight: '600' }}>Tenant ID</Text>
-      <TextInput
-        value={tenant}
-        onChangeText={setTenant}
-        autoCapitalize="none"
-        autoCorrect={false}
-        placeholder="default"
-        editable={!loading}
-        style={{ borderWidth: 1, borderColor: '#ccc', padding: 10, borderRadius: 8 }}
-      />
-
-      <Text style={{ fontWeight: '600' }}>E-mail</Text>
-      <TextInput
+      <Input value={tenant} onChangeText={setTenant} placeholder="Tenant (default)" autoCapitalize="none" />
+      <Input
         value={email}
         onChangeText={setEmail}
-        autoCapitalize="none"
-        autoCorrect={false}
+        placeholder="E-mail"
         keyboardType="email-address"
-        placeholder="admin@local.com"
-        editable={!loading}
-        style={{ borderWidth: 1, borderColor: '#ccc', padding: 10, borderRadius: 8 }}
+        autoCapitalize="none"
       />
+      <Input value={password} onChangeText={setPassword} placeholder="Senha" secureTextEntry />
 
-      <Text style={{ fontWeight: '600' }}>Senha</Text>
-      <TextInput
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        placeholder="123456"
-        editable={!loading}
-        style={{ borderWidth: 1, borderColor: '#ccc', padding: 10, borderRadius: 8 }}
-      />
-
-      <View style={{ height: 12 }} />
-      <Button title={loading ? 'Entrando...' : 'Entrar'} onPress={onLogin} disabled={loading} />
-    </SafeAreaView>
+      <Button onPress={onLogin} disabled={loading} theme="active">
+        {loading ? 'Entrando...' : 'Entrar'}
+      </Button>
+    </YStack>
   );
 }

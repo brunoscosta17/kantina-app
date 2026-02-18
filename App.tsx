@@ -1,9 +1,13 @@
+// App.tsx
 import { NavigationContainer } from '@react-navigation/native';
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import AppNavigator from './src/AppNavigator';
 import { attachInterceptors } from './src/lib/interceptors';
 import { useAuth } from './src/store/auth';
+
+import { TamaguiProvider } from 'tamagui';
+import config from './tamagui.config';
 
 export default function App() {
   const load = useAuth((s) => s.load);
@@ -23,8 +27,10 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <AppNavigator />
-    </NavigationContainer>
+    <TamaguiProvider config={config} defaultTheme="light">
+      <NavigationContainer>
+        <AppNavigator />
+      </NavigationContainer>
+    </TamaguiProvider>
   );
 }
