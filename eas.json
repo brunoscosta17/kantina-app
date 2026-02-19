@@ -1,0 +1,20 @@
+{
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "APP_ENV": "preview",
+        "EXPO_PUBLIC_API_URL": "https://kantina-api-380728917745.southamerica-east1.run.app"
+      }
+    },
+    "production": {
+      "env": {
+        "APP_ENV": "production",
+        "EXPO_PUBLIC_API_URL": "https://kantina-api-380728917745.southamerica-east1.run.app"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

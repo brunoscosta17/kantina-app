@@ -8,9 +8,9 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#4E8D63"
     },
     "ios": {
       "supportsTablet": true
@@ -24,7 +24,7 @@
       "predictiveBackGestureEnabled": false
     },
     "extra": {
-      "apiUrl": "http://192.168.30.11:3000"
+      "apiUrl": "https://kantina-api-380728917745.southamerica-east1.run.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"

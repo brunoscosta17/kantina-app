@@ -1,68 +1,488 @@
-import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, View } from 'react-native';
-import { Button, Text, TextInput } from 'react-native-paper';
+import axios from 'axios';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Animated,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+  useWindowDimensions
+} from 'react-native';
+import { Button, Checkbox, HelperText, Text, TextInput } from 'react-native-paper';
 import { useAuth } from '../store/auth';
 
+// Ajuste o caminho conforme seu projeto
+const logo = require('../../assets/kantina-logo.jpeg');
+
+const COLORS = {
+  green: '#80B990',
+  greenDark: '#4E8D63',
+  orange: '#E26509',
+  cream: '#EEE6DA',
+  white: '#FFFFFF',
+  text: '#1F2937',
+  muted: '#6B7280',
+  border: '#E5E7EB',
+};
+
 export default function LoginScreen() {
-  const [tenant, setTenant] = useState('default');
+  const login = useAuth((s) => s.login);
+  const savedTenant = useAuth((s) => s.tenantId);
+
+  const [tenantId, setTenantId] = useState(savedTenant ?? 'default');
   const [email, setEmail] = useState('admin@local.com');
   const [password, setPassword] = useState('123456');
+
+  const [remember, setRemember] = useState(true);
+  const [secure, setSecure] = useState(true);
+
   const [loading, setLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
 
-  const login = useAuth((s) => s.login);
+  const { width: screenW, height: screenH } = useWindowDimensions();
 
-  async function onLogin() {
+  // mesmo padding horizontal do container (20) => card ocupa "100%" desse miolo
+  const CARD_SIDE_PADDING = 20;
+  const cardWidth = screenW - CARD_SIDE_PADDING * 2;
+
+  // ajuste para a proporção real do seu arquivo (se for mais quadrada, mude aqui)
+  const LOGO_ASPECT = 16 / 9;
+
+  const [cardHeight, setCardHeight] = useState(0);
+
+  // esses valores precisam bater com seus paddings/margens do layout
+  const TOP_PADDING = 16;
+  const BOTTOM_PADDING = 20;
+  const HEADER_GAP = 12;
+
+  // espaço “fixo” que não é logo nem card (padding + margens)
+  const reserved = TOP_PADDING + BOTTOM_PADDING + HEADER_GAP;
+
+  // altura máxima que a logo pode ter para caber tudo na tela
+  const maxLogoHeight = Math.max(80, screenH - reserved - cardHeight);
+
+  // altura “natural” pela largura do card mantendo proporção
+  const naturalLogoHeight = cardWidth / LOGO_ASPECT;
+
+  // altura final da logo (nunca maior que o espaço disponível)
+  const logoHeight = Math.min(naturalLogoHeight, maxLogoHeight);
+
+  // e o width exatamente igual ao card
+  const logoStyle = { width: cardWidth, height: logoHeight };
+
+  const tenantError = useMemo(() => {
+    const v = tenantId.trim();
+    if (!v) return 'Informe o Tenant ID';
+    return '';
+  }, [tenantId]);
+
+  const emailError = useMemo(() => {
+    const v = email.trim();
+    if (!v) return 'Informe o e-mail';
+    if (!v.includes('@')) return 'E-mail inválido';
+    return '';
+  }, [email]);
+
+  const passwordError = useMemo(() => {
+    if (!password) return 'Informe a senha';
+    return '';
+  }, [password]);
+
+  const canSubmit = useMemo(() => {
+    return !loading && !tenantError && !emailError && !passwordError;
+  }, [loading, tenantError, emailError, passwordError]);
+
+  async function handleLogin() {
     if (loading) return;
-    setLoading(true);
+
+    const t = tenantId.trim();
+    const e = email.trim().toLowerCase();
+    const p = password;
+
+    // mesmas travas do antigo
+    if (!t) return;
+    if (!e || emailError) return;
+    if (!p) return;
+
+    setLoginError(null);
+
     try {
-      await login(tenant.trim(), email.trim().toLowerCase(), password);
+      setLoading(true);
+      console.log('[LOGIN] tenant=', t, 'email=', e);
+      await login(t, e, p);
+      // redirecionamento continua sendo automático pelo AppNavigator (token)
+    } catch (err: unknown) {
+      // log no console para depuração
+      console.log('LOGIN ERROR:', err);
+
+      if (axios.isAxiosError(err)) {
+        const status = err.response?.status;
+
+        // tenta extrair mensagem padrão de APIs (ajuste chaves se sua API usa outra)
+        const data: any = err.response?.data;
+        const apiMsg =
+          data?.message ||
+          data?.error ||
+          (Array.isArray(data?.errors) ? data.errors.join(', ') : null);
+        alert(JSON.stringify(data, null, 2));
+        // mensagens mais úteis por status
+        if (status === 401) {
+          setLoginError(apiMsg || 'Credenciais inválidas (401).');
+        } else if (status === 404) {
+          setLoginError(apiMsg || 'Endpoint não encontrado (404).');
+        } else if (status) {
+          setLoginError(apiMsg || `Falha ao acessar (${status}).`);
+        } else {
+          // sem response => geralmente rede / API offline / baseURL errada
+          setLoginError('Sem conexão com a API. Verifique a rede e o endereço do servidor.');
+        }
+      } else {
+        setLoginError('Não foi possível acessar. Verifique seus dados e tente novamente.');
+      }
     } finally {
       setLoading(false);
     }
   }
 
+  function handleStudentAccess() {
+    // placeholder (mantém layout)
+    setLoginError('Acesso do Aluno: implemente a navegação/fluxo aqui.');
+  }
+
+  const logoOpacity = useRef(new Animated.Value(0)).current;
+  const logoTranslate = useRef(new Animated.Value(12)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(logoOpacity, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(logoTranslate, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [logoOpacity, logoTranslate]);
+
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, padding: 20, justifyContent: 'center' }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <View style={{ gap: 14 }}>
-        <Text variant="headlineMedium" style={{ fontWeight: '700' }}>
-          Entrar
-        </Text>
-        <Text variant="bodyMedium" style={{ opacity: 0.7 }}>
-          Acesse sua conta para continuar.
-        </Text>
+    <View style={styles.root}>
+      {/* Fundo (topo verde + base cream) */}
+      <View style={styles.bgTop} />
+      <View style={styles.bgBottom} />
 
-        <TextInput
-          mode="outlined"
-          label="Tenant"
-          value={tenant}
-          onChangeText={setTenant}
-          autoCapitalize="none"
-        />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.flex}
+      >
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Header / Logo */}
+          <View style={styles.header}>
+            <Animated.View
+              style={[
+                styles.logoWrap,
+                { opacity: logoOpacity, transform: [{ translateY: logoTranslate }] },
+              ]}
+            >
+              <Image source={logo} style={styles.logo} resizeMode="contain" />
+            </Animated.View>
+          </View>
 
-        <TextInput
-          mode="outlined"
-          label="E-mail"
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-          keyboardType="email-address"
-        />
+          {/* Card */}
+          <View
+            style={styles.card}
+            onLayout={(e) => setCardHeight(e.nativeEvent.layout.height)}
+          >
+            {/* Tenant */}
+            <TextInput
+              mode="outlined"
+              label="Tenant"
+              value={tenantId}
+              onChangeText={setTenantId}
+              autoCapitalize="none"
+              autoCorrect={false}
+              style={styles.input}
+              outlineColor={COLORS.border}
+              activeOutlineColor={COLORS.greenDark}
+              textColor={COLORS.text}
+              theme={{ colors: { primary: COLORS.greenDark } }}
+              editable={!loading}
+              error={!!tenantError}
+            />
+            <HelperText type={tenantError ? 'error' : 'info'} visible>
+              {tenantError || ' '}
+            </HelperText>
 
-        <TextInput
-          mode="outlined"
-          label="Senha"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
+            {/* Email */}
+            <TextInput
+              mode="outlined"
+              label="Digite seu e-mail"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              style={styles.input}
+              left={<TextInput.Icon icon="email-outline" />}
+              outlineColor={COLORS.border}
+              activeOutlineColor={COLORS.greenDark}
+              textColor={COLORS.text}
+              theme={{ colors: { primary: COLORS.greenDark } }}
+              editable={!loading}
+              error={!!emailError}
+            />
+            <HelperText type={emailError ? 'error' : 'info'} visible>
+              {emailError || ' '}
+            </HelperText>
 
-        <Button mode="contained" onPress={onLogin} loading={loading} disabled={loading}>
-          Entrar
-        </Button>
-      </View>
-    </KeyboardAvoidingView>
+            {/* Senha */}
+            <TextInput
+              mode="outlined"
+              label="Senha"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={secure}
+              autoCapitalize="none"
+              autoCorrect={false}
+              style={styles.input}
+              left={<TextInput.Icon icon="lock-outline" />}
+              right={
+                <TextInput.Icon
+                  icon={secure ? 'eye-off-outline' : 'eye-outline'}
+                  onPress={() => setSecure((s) => !s)}
+                />
+              }
+              outlineColor={COLORS.border}
+              activeOutlineColor={COLORS.greenDark}
+              textColor={COLORS.text}
+              theme={{ colors: { primary: COLORS.greenDark } }}
+              editable={!loading}
+              error={!!passwordError}
+            />
+            <HelperText type={passwordError ? 'error' : 'info'} visible>
+              {passwordError || ' '}
+            </HelperText>
+
+            {/* Remember */}
+            <View style={styles.rememberRow}>
+              <View style={styles.rememberLeft}>
+                <Checkbox
+                  status={remember ? 'checked' : 'unchecked'}
+                  onPress={() => setRemember((r) => !r)}
+                  color={COLORS.greenDark}
+                  disabled={loading}
+                />
+                <Text style={styles.rememberText}>Salvar dados de acesso?</Text>
+              </View>
+            </View>
+
+            {/* Erro de login (API) */}
+            <View style={styles.errorSlot}>
+              <Text style={styles.errorText} numberOfLines={2}>
+                {loginError || ' '}
+              </Text>
+            </View>
+
+            {/* Buttons */}
+            <Button
+              mode="contained"
+              onPress={handleLogin}
+              loading={loading}
+              disabled={!canSubmit}
+              style={styles.primaryBtn}
+              contentStyle={styles.btnContent}
+              buttonColor={COLORS.greenDark}
+              textColor={COLORS.white}
+            >
+              Acessar
+            </Button>
+
+            <Button
+              mode="contained-tonal"
+              onPress={handleStudentAccess}
+              style={styles.secondaryBtn}
+              contentStyle={styles.btnContent}
+              buttonColor={COLORS.orange}
+              textColor={COLORS.white}
+              disabled={loading}
+            >
+              Acesso do Aluno
+            </Button>
+
+            {/* Links */}
+            <View style={styles.links}>
+              <Text style={styles.link}>
+                Não possui uma conta? <Text style={styles.linkStrong}>Cadastre-se</Text>
+              </Text>
+              <Text style={styles.link}>
+                Esqueceu a senha? <Text style={styles.linkStrong}>Clique aqui</Text>
+              </Text>
+            </View>
+
+            {/* Footer row */}
+            <View style={styles.footerRow}>
+              <Text style={styles.footerText}>Versão 1.0.0</Text>
+              <Text style={styles.footerText}>PT</Text>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  flex: { flex: 1 },
+
+  root: {
+    flex: 1,
+    backgroundColor: COLORS.cream,
+  },
+
+  bgTop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '45%',
+    backgroundColor: COLORS.greenDark,
+  },
+
+  bgBottom: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: '45%',
+    backgroundColor: COLORS.cream,
+  },
+
+  container: {
+    flexGrow: 1,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  header: {
+    width: '100%',
+    paddingHorizontal: 0,   // container já tem padding 20
+    marginBottom: 12,
+  },
+
+  logoWrap: {
+    width: '100%',          // <- garante mesma largura do card
+    alignSelf: 'stretch',
+    alignItems: 'center',
+  },
+
+  logo: {
+    width: '100%',          // <- igual ao card
+    maxWidth: '100%',
+    height: 170,            // controla altura sem estourar
+    borderRadius: 14,       // opcional (fica bonito)
+  },
+
+  card: {
+    width: '100%',
+    backgroundColor: COLORS.white,
+    borderRadius: 22,
+    padding: 18,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.04)',
+  },
+
+  input: {
+    marginBottom: 0,
+    backgroundColor: COLORS.white,
+  },
+
+  rememberRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 2,
+    marginBottom: 10,
+  },
+
+  rememberLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  rememberText: {
+    color: COLORS.muted,
+    fontSize: 13,
+  },
+
+  errorSlot: {
+    minHeight: 40,          // espaço reservado (não “pula”)
+    justifyContent: 'center',
+    marginBottom: 6,
+  },
+
+  errorText: {
+    color: '#B91C1C',
+    marginBottom: 10,
+    fontSize: 13,
+    textAlign: 'center',
+  },
+
+  primaryBtn: {
+    borderRadius: 14,
+    marginTop: 2,
+  },
+
+  secondaryBtn: {
+    borderRadius: 14,
+    marginTop: 10,
+  },
+
+  btnContent: {
+    height: 48,
+  },
+
+  links: {
+    marginTop: 14,
+    gap: 6,
+  },
+
+  link: {
+    textAlign: 'center',
+    color: COLORS.muted,
+    fontSize: 13,
+  },
+
+  linkStrong: {
+    color: COLORS.orange,
+    fontWeight: '700',
+  },
+
+  footerRow: {
+    marginTop: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+
+  footerText: {
+    flex: 1,
+    textAlign: 'center',
+    color: '#9CA3AF',
+    fontSize: 12,
+  },
+});

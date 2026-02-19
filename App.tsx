@@ -1,11 +1,12 @@
 import { NavigationContainer } from '@react-navigation/native';
+import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+import { PaperProvider } from 'react-native-paper';
 import AppNavigator from './src/AppNavigator';
 import { attachInterceptors } from './src/lib/interceptors';
 import { useAuth } from './src/store/auth';
-
-import { Provider as PaperProvider } from 'react-native-paper';
+import { theme } from './theme';
 
 export default function App() {
   const load = useAuth((s) => s.load);
@@ -25,7 +26,8 @@ export default function App() {
   }
 
   return (
-    <PaperProvider>
+    <PaperProvider theme={theme}>
+      <StatusBar style="light" />
       <NavigationContainer>
         <AppNavigator />
       </NavigationContainer>

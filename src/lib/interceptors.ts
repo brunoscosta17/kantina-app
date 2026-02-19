@@ -60,16 +60,37 @@ export function attachInterceptors() {
       const status = error.response?.status;
       const originalRequest: any = error.config;
 
-      // se não é 401 ou não tem request original ou já tentou, só joga erro
-      if (status !== 401 || !originalRequest || originalRequest._retry) {
+      if (status !== 401 || !originalRequest) {
         return Promise.reject(error);
       }
 
-      // evita loop caso /auth/refresh dê 401
-      if (originalRequest.url?.includes('/auth/refresh')) {
+      const url = originalRequest.url ?? '';
+
+      // 1) NUNCA tente refresh para rotas de auth "iniciais"
+      // (login/register não devem disparar refresh)
+      const isAuthInitial =
+        url.includes('/auth/login') || url.includes('/auth/register');
+
+      if (isAuthInitial) {
         return Promise.reject(error);
       }
 
+      // 2) Evita loop caso /auth/refresh dê 401
+      if (url.includes('/auth/refresh')) {
+        return Promise.reject(error);
+      }
+
+      // 3) Se não temos refreshToken ainda, não tem o que fazer:
+      // devolve o 401 original (isso corrige seu erro atual)
+      const { refreshToken } = useAuth.getState();
+      if (!refreshToken) {
+        return Promise.reject(error);
+      }
+
+      // se já tentou uma vez, não tenta de novo
+      if (originalRequest._retry) {
+        return Promise.reject(error);
+      }
       originalRequest._retry = true;
 
       try {

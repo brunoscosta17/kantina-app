@@ -24,4 +24,6 @@ const api = axios.create({
   timeout: 15000,
 });
 
+console.log('[API_URL]', API_URL);
+
 export default api;
