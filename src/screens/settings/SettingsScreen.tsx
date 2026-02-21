@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../store/auth';
 
 export default function SettingsScreen() {
+  const tenantCode = useAuth((s) => s.tenantCode);
   const tenantId = useAuth((s) => s.tenantId);
   const token = useAuth((s) => s.token);
   const logout = useAuth((s) => s.logout);

@@ -29,9 +29,10 @@ const COLORS = {
 
 export default function LoginScreen() {
   const login = useAuth((s) => s.login);
-  const savedTenant = useAuth((s) => s.tenantId);
+  const tenantName = useAuth((s) => s.tenantName);
+  const tenantCode = useAuth((s) => s.tenantCode);
+  const logout = useAuth((s) => s.logout);
 
-  const [tenantId, setTenantId] = useState(savedTenant ?? 'default');
   const [email, setEmail] = useState('admin@local.com');
   const [password, setPassword] = useState('123456');
 
@@ -72,12 +73,6 @@ export default function LoginScreen() {
   // e o width exatamente igual ao card
   const logoStyle = { width: cardWidth, height: logoHeight };
 
-  const tenantError = useMemo(() => {
-    const v = tenantId.trim();
-    if (!v) return 'Informe o Tenant ID';
-    return '';
-  }, [tenantId]);
-
   const emailError = useMemo(() => {
     const v = email.trim();
     if (!v) return 'Informe o e-mail';
@@ -90,19 +85,13 @@ export default function LoginScreen() {
     return '';
   }, [password]);
 
-  const canSubmit = useMemo(() => {
-    return !loading && !tenantError && !emailError && !passwordError;
-  }, [loading, tenantError, emailError, passwordError]);
-
   async function handleLogin() {
     if (loading) return;
 
-    const t = tenantId.trim();
     const e = email.trim().toLowerCase();
     const p = password;
 
     // mesmas travas do antigo
-    if (!t) return;
     if (!e || emailError) return;
     if (!p) return;
 
@@ -110,8 +99,8 @@ export default function LoginScreen() {
 
     try {
       setLoading(true);
-      console.log('[LOGIN] tenant=', t, 'email=', e);
-      await login(t, e, p);
+      console.log('[LOGIN] school=', tenantCode, tenantName, 'email=', e);
+      await login(e, p);
       // redirecionamento continua sendo automático pelo AppNavigator (token)
     } catch (err: unknown) {
       // log no console para depuração
@@ -192,7 +181,7 @@ export default function LoginScreen() {
                 { opacity: logoOpacity, transform: [{ translateY: logoTranslate }] },
               ]}
             >
-              <Image source={logo} style={styles.logo} resizeMode="contain" />
+              <Image source={logo} style={[styles.logo, logoStyle]} resizeMode="contain" />
             </Animated.View>
           </View>
 
@@ -201,26 +190,21 @@ export default function LoginScreen() {
             style={styles.card}
             onLayout={(e) => setCardHeight(e.nativeEvent.layout.height)}
           >
-            {/* Tenant */}
-            <TextInput
-              mode="outlined"
-              label="Tenant"
-              value={tenantId}
-              onChangeText={setTenantId}
-              autoCapitalize="none"
-              autoCorrect={false}
-              style={styles.input}
-              outlineColor={COLORS.border}
-              activeOutlineColor={COLORS.greenDark}
-              textColor={COLORS.text}
-              theme={{ colors: { primary: COLORS.greenDark } }}
-              editable={!loading}
-              error={!!tenantError}
-            />
-            <HelperText type={tenantError ? 'error' : 'info'} visible>
-              {tenantError || ' '}
-            </HelperText>
+            <View style={{ marginBottom: 10 }}>
+              <Text style={{ fontWeight: '600', marginTop: 12 }}>Escola</Text>
+              <Text style={{ color: '#666' }}>
+                {tenantName ?? '(não definido)'} {tenantCode ? `• ${tenantCode}` : ''}
+              </Text>
 
+              <Button
+                mode="text"
+                onPress={() => logout({ clearTenant: true })}
+                disabled={loading}
+                style={{ alignSelf: 'flex-start', paddingHorizontal: 0 }}
+              >
+                Trocar escola
+              </Button>
+            </View>
             {/* Email */}
             <TextInput
               mode="outlined"
@@ -296,7 +280,6 @@ export default function LoginScreen() {
               mode="contained"
               onPress={handleLogin}
               loading={loading}
-              disabled={!canSubmit}
               style={styles.primaryBtn}
               contentStyle={styles.btnContent}
               buttonColor={COLORS.greenDark}
