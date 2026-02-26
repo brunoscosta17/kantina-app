@@ -1,6 +1,6 @@
-import * as SecureStore from 'expo-secure-store';
 import { create } from 'zustand';
 import api from '../lib/api';
+import { deleteItemAsync, getItemAsync, setItemAsync } from '../lib/storage';
 import { resolveTenant as resolveTenantApi } from '../services/tenants';
 
 type LoginResponse = {
@@ -42,33 +42,33 @@ export const useAuth = create<AuthState>((set, get) => ({
   refreshToken: undefined,
 
   setTenant: async ({ tenantCode, tenantId, tenantName }) => {
-    if (tenantCode) await SecureStore.setItemAsync('tenantCode', tenantCode);
-    else await SecureStore.deleteItemAsync('tenantCode');
+    if (tenantCode) await setItemAsync('tenantCode', tenantCode);
+    else await deleteItemAsync('tenantCode');
 
-    if (tenantId) await SecureStore.setItemAsync('tenantId', tenantId);
-    else await SecureStore.deleteItemAsync('tenantId');
+    if (tenantId) await setItemAsync('tenantId', tenantId);
+    else await deleteItemAsync('tenantId');
 
-    if (tenantName) await SecureStore.setItemAsync('tenantName', tenantName);
-    else await SecureStore.deleteItemAsync('tenantName');
+    if (tenantName) await setItemAsync('tenantName', tenantName);
+    else await deleteItemAsync('tenantName');
 
     set({ tenantCode, tenantId, tenantName });
   },
 
   clearTenant: async () => {
     await Promise.all([
-      SecureStore.deleteItemAsync('tenantCode'),
-      SecureStore.deleteItemAsync('tenantId'),
-      SecureStore.deleteItemAsync('tenantName'),
+      deleteItemAsync('tenantCode'),
+      deleteItemAsync('tenantId'),
+      deleteItemAsync('tenantName'),
     ]);
     set({ tenantCode: undefined, tenantId: undefined, tenantName: undefined });
   },
 
   setSession: async (accessToken, refreshToken) => {
-    if (accessToken) await SecureStore.setItemAsync('token', accessToken);
-    else await SecureStore.deleteItemAsync('token');
+    if (accessToken) await setItemAsync('token', accessToken);
+    else await deleteItemAsync('token');
 
-    if (refreshToken) await SecureStore.setItemAsync('refreshToken', refreshToken);
-    else await SecureStore.deleteItemAsync('refreshToken');
+    if (refreshToken) await setItemAsync('refreshToken', refreshToken);
+    else await deleteItemAsync('refreshToken');
 
     set({ token: accessToken, refreshToken });
   },
@@ -92,11 +92,11 @@ export const useAuth = create<AuthState>((set, get) => ({
 
   load: async () => {
     const [tenantCode, tenantId, tenantName, token, refreshToken] = await Promise.all([
-      SecureStore.getItemAsync('tenantCode'),
-      SecureStore.getItemAsync('tenantId'),
-      SecureStore.getItemAsync('tenantName'),
-      SecureStore.getItemAsync('token'),
-      SecureStore.getItemAsync('refreshToken'),
+      getItemAsync('tenantCode'),
+      getItemAsync('tenantId'),
+      getItemAsync('tenantName'),
+      getItemAsync('token'),
+      getItemAsync('refreshToken'),
     ]);
 
     set({
@@ -111,11 +111,11 @@ export const useAuth = create<AuthState>((set, get) => ({
 
   logout: async (opts) => {
     await Promise.all([
-      SecureStore.deleteItemAsync('token'),
-      SecureStore.deleteItemAsync('refreshToken'),
-      opts?.clearTenant ? SecureStore.deleteItemAsync('tenantCode') : Promise.resolve(),
-      opts?.clearTenant ? SecureStore.deleteItemAsync('tenantId') : Promise.resolve(),
-      opts?.clearTenant ? SecureStore.deleteItemAsync('tenantName') : Promise.resolve(),
+      deleteItemAsync('token'),
+      deleteItemAsync('refreshToken'),
+      opts?.clearTenant ? deleteItemAsync('tenantCode') : Promise.resolve(),
+      opts?.clearTenant ? deleteItemAsync('tenantId') : Promise.resolve(),
+      opts?.clearTenant ? deleteItemAsync('tenantName') : Promise.resolve(),
     ]);
 
     set({

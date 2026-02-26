@@ -24,7 +24,7 @@
       "predictiveBackGestureEnabled": false
     },
     "extra": {
-      "apiUrl": "https://kantina-api-380728917745.southamerica-east1.run.app"
+      "apiUrl": "process.env.NODE_ENV==='development' && typeof window !== 'undefined' ? 'http://localhost:3000' : 'https://kantina-api-380728917745.southamerica-east1.run.app'"
     },
     "web": {
       "favicon": "./assets/favicon.png"
