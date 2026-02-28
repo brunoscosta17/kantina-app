@@ -36,11 +36,11 @@ export default function CatalogScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.cream, padding: 16 }}>
         <FlatList
-          ListHeaderComponent={() => (
-            <Text style={{ color: COLORS.orange, fontSize: 28, fontWeight: '700', marginBottom: 12 }}>
-              Catálogo
-            </Text>
-          )}
+          // ListHeaderComponent={() => (
+          //   <Text style={{ color: COLORS.orange, fontSize: 28, fontWeight: '700', marginBottom: 12 }}>
+          //     Catálogo
+          //   </Text>
+          // )}
           data={items}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
