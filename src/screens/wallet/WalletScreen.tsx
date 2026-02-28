@@ -16,7 +16,7 @@ export default function WalletScreen() {
       </View>
       <View style={{ backgroundColor: '#fff', padding: 20, borderRadius: 12, alignItems: 'center', marginBottom: 20 }}>
         <Text style={{ fontSize: 32, fontWeight: '700', color: COLORS.greenDark }}>
-          R$ {balance}
+          R$ {balance.toFixed(2).replace('.', ',')}
         </Text>
         <Text style={{ color: COLORS.text, marginTop: 4 }}>Saldo disponível</Text>
       </View>
