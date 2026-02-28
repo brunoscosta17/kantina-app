@@ -32,9 +32,9 @@ export default function WalletScreen() {
             <View key={w.id} style={{ backgroundColor: '#BFE3D0', padding: 20, borderRadius: 12, alignItems: 'center', marginBottom: 16 }}>
               <Text style={{ fontSize: 18, fontWeight: '600', color: COLORS.orange, marginBottom: 4 }}>{w.student?.name}</Text>
               <Text style={{ fontSize: 15, color: COLORS.text, marginBottom: 8 }}>{w.student?.classroom}</Text>
-              {w.student?.tenant?.name && (
-                <Text style={{ fontSize: 13, color: COLORS.greenDark, marginBottom: 8 }}>{w.student.tenant.name}</Text>
-              )}
+              {/* {w.student?.tenant?.name && (
+                <Text style={{ fontSize: 13, color: COLORS.orange, marginBottom: 8 }}>{w.student.tenant.name}</Text>
+              )} */}
               <Text style={{ fontSize: 32, fontWeight: '700', color: COLORS.greenDark }}>
                 R$ {(w.balanceCents / 100).toFixed(2).replace('.', ',')}
               </Text>
