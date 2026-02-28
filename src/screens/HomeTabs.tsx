@@ -3,10 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '../../theme';
 import { useAuth } from '../store/auth';
-import CatalogScreen from './catalog/CatalogScreen';
-import OrdersScreen from './orders/OrdersScreen';
-import SettingsScreen from './settings/SettingsScreen';
-import WalletScreen from './wallet/WalletScreen';
+import { RoleKey, roleTabs } from './roleTabs';
 // Função para suavizar cor (mistura com branco)
 function lighten(color: string, percent: number) {
   // Aceita cor hex tipo #RRGGBB
@@ -24,45 +21,8 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 export default function HomeTabs() {
-  const role = useAuth((s) => s.role);
-
-  // Define abas por perfil
-  let tabs: Array<{ name: string; component: any } & { icon: string }> = [];
-  if (role === 'ADMIN' || role === 'GESTOR') {
-    tabs = [
-      { name: 'Catálogo', component: CatalogScreen, icon: 'food-fork-drink' },
-      { name: 'Pedidos', component: OrdersScreen, icon: 'clipboard-list' },
-      { name: 'Carteira', component: WalletScreen, icon: 'wallet' },
-      { name: 'Ajustes', component: SettingsScreen, icon: 'cog' },
-    ];
-  } else if (role === 'OPERADOR') {
-    tabs = [
-      { name: 'Pedidos', component: OrdersScreen, icon: 'clipboard-list' },
-      { name: 'Catálogo', component: CatalogScreen, icon: 'food-fork-drink' },
-      { name: 'Ajustes', component: SettingsScreen, icon: 'cog' },
-    ];
-  } else if (role === 'RESPONSAVEL') {
-    tabs = [
-      { name: 'Carteira', component: WalletScreen, icon: 'wallet' },
-      { name: 'Pedidos', component: OrdersScreen, icon: 'clipboard-list' },
-      { name: 'Catálogo', component: CatalogScreen, icon: 'food-fork-drink' },
-      { name: 'Ajustes', component: SettingsScreen, icon: 'cog' },
-    ];
-  } else if (role === 'ALUNO') {
-    tabs = [
-      { name: 'Pedidos', component: OrdersScreen, icon: 'clipboard-list' },
-      { name: 'Catálogo', component: CatalogScreen, icon: 'food-fork-drink' },
-      { name: 'Ajustes', component: SettingsScreen, icon: 'cog' },
-    ];
-  } else {
-    // fallback: todas as abas
-    tabs = [
-      { name: 'Catálogo', component: CatalogScreen, icon: 'food-fork-drink' },
-      { name: 'Pedidos', component: OrdersScreen, icon: 'clipboard-list' },
-      { name: 'Carteira', component: WalletScreen, icon: 'wallet' },
-      { name: 'Ajustes', component: SettingsScreen, icon: 'cog' },
-    ];
-  }
+  const role = useAuth((s) => s.role) as RoleKey;
+  const tabs = roleTabs[role] ?? roleTabs['ALUNO'];
 
   return (
     <Tab.Navigator
