@@ -13,6 +13,15 @@ export default function SettingsScreen() {
   const role = useAuth((s) => s.role);
   const logout = useAuth((s) => s.logout);
 
+  const [alunos, setAlunos] = React.useState<any[]>([]);
+  React.useEffect(() => {
+    if (role === 'RESPONSAVEL' && token && tenantId) {
+      import('../../services/students').then(({ getStudentsOfResponsible }) => {
+        getStudentsOfResponsible(token, tenantId).then(setAlunos);
+      });
+    }
+  }, [role, token, tenantId]);
+
   const roleLabel = {
     ADMIN: 'Administrador',
     GESTOR: 'Gestor',
@@ -63,6 +72,24 @@ export default function SettingsScreen() {
           {token ? 'Logado' : 'Deslogado'}
         </Text>
       </View>
+
+      {role === 'RESPONSAVEL' && (
+        <View style={{ marginTop: 24, padding: 16, backgroundColor: '#fff', borderRadius: 8, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 }}>
+          <Text style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 8, color: COLORS.orange }}>
+            Alunos sob sua responsabilidade:
+          </Text>
+          {alunos.length === 0 ? (
+            <Text style={{ color: '#888', fontStyle: 'italic' }}>Nenhum aluno vinculado.</Text>
+          ) : (
+            alunos.map((a) => (
+              <View key={a.id} style={{ marginBottom: 8, padding: 8, backgroundColor: '#BFE3D0', borderRadius: 6 }}>
+                <Text style={{ fontSize: 15, color: COLORS.greenDark, fontWeight: '500' }}>{a.name}</Text>
+                <Text style={{ fontSize: 13, color: COLORS.text }}>{a.classroom}</Text>
+              </View>
+            ))
+          )}
+        </View>
+      )}
 
       <View style={{ marginTop: 'auto' }}>
         <Button mode="contained" style={{ backgroundColor: COLORS.greenDark }} onPress={onLogout}>
