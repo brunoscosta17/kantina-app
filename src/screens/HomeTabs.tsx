@@ -5,12 +5,22 @@ import OrdersScreen from './orders/OrdersScreen';
 import SettingsScreen from './settings/SettingsScreen';
 import WalletScreen from './wallet/WalletScreen';
 
+import { COLORS } from '../../theme';
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 export default function HomeTabs() {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={{
+        headerTitleStyle: {
+          color: COLORS.orange,
+          fontSize: 28,
+          fontWeight: '700',
+        },
+      }}
+    >
       <Tab.Screen name="Catálogo" component={CatalogScreen} />
       <Tab.Screen name="Pedidos" component={OrdersScreen} />
       <Tab.Screen name="Carteira" component={WalletScreen} />

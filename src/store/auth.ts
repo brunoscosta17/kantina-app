@@ -83,10 +83,14 @@ export const useAuth = create<AuthState>((set, get) => ({
   },
 
   login: async (email, password) => {
+    const tenantCode = get().tenantCode;
     const tenantId = get().tenantId;
     if (!tenantId) throw new Error('Tenant não definido. Selecione a escola novamente.');
-
-    const { data } = await api.post<LoginResponse>('/auth/login', { email, password });
+    // Log para futuras implementações
+    console.log('[LOGIN] tenantCode:', tenantCode, 'tenantId:', tenantId);
+    const { data } = await api.post<LoginResponse>('/auth/login', { email, password }, {
+      headers: { 'x-tenant': tenantId },
+    });
     await get().setSession(data.accessToken, data.refreshToken);
   },
 

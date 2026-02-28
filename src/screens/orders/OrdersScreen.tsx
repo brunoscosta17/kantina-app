@@ -49,12 +49,47 @@
 //     </SafeAreaView>
 //   );
 // }
-import { SafeAreaView, Text } from 'react-native';
+import { FlatList, SafeAreaView, Text, View } from 'react-native';
+import { COLORS } from '../../../theme';
 
 export default function OrdersScreen() {
+  // Mock de pedidos para exibição
+  const orders = [
+    { id: '101', status: 'Pendente', total: '12.00' },
+    { id: '102', status: 'Finalizado', total: '8.50' },
+  ];
   return (
-    <SafeAreaView style={{ flex: 1, padding: 16 }}>
-      <Text>Pedidos</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.cream, padding: 16 }}>
+      {/* Título removido, apenas lista */}
+      <FlatList
+        // ListHeaderComponent={() => (
+        //   <Text style={{ color: COLORS.orange, fontSize: 28, fontWeight: '700', marginBottom: 12 }}>
+        //     Pedidos
+        //   </Text>
+        // )}
+        data={orders}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View
+            style={{
+              backgroundColor: '#fff',
+              padding: 12,
+              borderRadius: 8,
+              marginBottom: 10,
+              shadowColor: '#000',
+              shadowOpacity: 0.05,
+              shadowRadius: 4,
+              elevation: 2,
+            }}
+          >
+            <Text style={{ color: COLORS.text, fontWeight: '600', fontSize: 16 }}>Pedido #{item.id}</Text>
+            <Text style={{ color: COLORS.orange, marginTop: 4 }}>{item.status}</Text>
+            <Text style={{ color: COLORS.greenDark, marginTop: 4 }}>
+              R$ {item.total}
+            </Text>
+          </View>
+        )}
+      />
     </SafeAreaView>
   );
 }

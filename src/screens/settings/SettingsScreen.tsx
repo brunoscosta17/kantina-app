@@ -1,7 +1,9 @@
 import Constants from 'expo-constants';
 import React from 'react';
-import { Alert, Button, Text, View } from 'react-native';
+import { Alert, View } from 'react-native';
+import { Button, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { COLORS } from '../../../theme';
 import { useAuth } from '../../store/auth';
 
 export default function SettingsScreen() {
@@ -27,26 +29,31 @@ export default function SettingsScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, padding: 16 }}>
-      <Text style={{ fontSize: 22, fontWeight: '700', marginBottom: 12 }}>
-        Ajustes
-      </Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.cream, padding: 16 }}>
+      {/* Título removido, apenas conteúdo */}
+      {/* <View style={{ marginBottom: 12 }}>
+        <Text style={{ color: COLORS.orange, fontSize: 28, fontWeight: '700' }}>
+          Ajustes
+        </Text>
+      </View> */}
 
       <View style={{ gap: 8, marginBottom: 20 }}>
-        <Text style={{ fontWeight: '600' }}>API</Text>
-        <Text style={{ color: '#666' }}>{apiUrl}</Text>
+        <Text style={{ color: COLORS.text, fontWeight: '600' }}>API</Text>
+        <Text style={{ color: COLORS.greenDark }}>{apiUrl}</Text>
 
-        <Text style={{ fontWeight: '600', marginTop: 12 }}>Tenant</Text>
-        <Text style={{ color: '#666' }}>{tenantId ?? '(não definido)'}</Text>
+        <Text style={{ color: COLORS.text, fontWeight: '600', marginTop: 12 }}>Tenant</Text>
+        <Text style={{ color: COLORS.greenDark }}>{tenantId ?? '(não definido)'}</Text>
 
-        <Text style={{ fontWeight: '600', marginTop: 12 }}>Sessão</Text>
-        <Text style={{ color: '#666' }}>
+        <Text style={{ color: COLORS.text, fontWeight: '600', marginTop: 12 }}>Sessão</Text>
+        <Text style={{ color: COLORS.orange }}>
           {token ? 'Logado' : 'Deslogado'}
         </Text>
       </View>
 
       <View style={{ marginTop: 'auto' }}>
-        <Button title="Sair" onPress={onLogout} />
+        <Button mode="contained" style={{ backgroundColor: COLORS.greenDark }} onPress={onLogout}>
+          Sair
+        </Button>
       </View>
     </SafeAreaView>
   );
