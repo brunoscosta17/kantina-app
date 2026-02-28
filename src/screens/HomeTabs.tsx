@@ -1,12 +1,12 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { COLORS } from '../../theme';
+import { useAuth } from '../store/auth';
 import CatalogScreen from './catalog/CatalogScreen';
 import OrdersScreen from './orders/OrdersScreen';
 import SettingsScreen from './settings/SettingsScreen';
 import WalletScreen from './wallet/WalletScreen';
-
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { COLORS } from '../../theme';
 // Função para suavizar cor (mistura com branco)
 function lighten(color: string, percent: number) {
   // Aceita cor hex tipo #RRGGBB
@@ -24,6 +24,46 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 export default function HomeTabs() {
+  const role = useAuth((s) => s.role);
+
+  // Define abas por perfil
+  let tabs: Array<{ name: string; component: any } & { icon: string }> = [];
+  if (role === 'ADMIN' || role === 'GESTOR') {
+    tabs = [
+      { name: 'Catálogo', component: CatalogScreen, icon: 'food-fork-drink' },
+      { name: 'Pedidos', component: OrdersScreen, icon: 'clipboard-list' },
+      { name: 'Carteira', component: WalletScreen, icon: 'wallet' },
+      { name: 'Ajustes', component: SettingsScreen, icon: 'cog' },
+    ];
+  } else if (role === 'OPERADOR') {
+    tabs = [
+      { name: 'Pedidos', component: OrdersScreen, icon: 'clipboard-list' },
+      { name: 'Catálogo', component: CatalogScreen, icon: 'food-fork-drink' },
+      { name: 'Ajustes', component: SettingsScreen, icon: 'cog' },
+    ];
+  } else if (role === 'RESPONSAVEL') {
+    tabs = [
+      { name: 'Carteira', component: WalletScreen, icon: 'wallet' },
+      { name: 'Pedidos', component: OrdersScreen, icon: 'clipboard-list' },
+      { name: 'Catálogo', component: CatalogScreen, icon: 'food-fork-drink' },
+      { name: 'Ajustes', component: SettingsScreen, icon: 'cog' },
+    ];
+  } else if (role === 'ALUNO') {
+    tabs = [
+      { name: 'Pedidos', component: OrdersScreen, icon: 'clipboard-list' },
+      { name: 'Catálogo', component: CatalogScreen, icon: 'food-fork-drink' },
+      { name: 'Ajustes', component: SettingsScreen, icon: 'cog' },
+    ];
+  } else {
+    // fallback: todas as abas
+    tabs = [
+      { name: 'Catálogo', component: CatalogScreen, icon: 'food-fork-drink' },
+      { name: 'Pedidos', component: OrdersScreen, icon: 'clipboard-list' },
+      { name: 'Carteira', component: WalletScreen, icon: 'wallet' },
+      { name: 'Ajustes', component: SettingsScreen, icon: 'cog' },
+    ];
+  }
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -53,19 +93,14 @@ export default function HomeTabs() {
           fontWeight: '600',
         },
         tabBarIcon: ({ color, size }) => {
-          let iconName = '';
-          if (route.name === 'Catálogo') iconName = 'food-fork-drink';
-          else if (route.name === 'Pedidos') iconName = 'clipboard-list';
-          else if (route.name === 'Carteira') iconName = 'wallet';
-          else if (route.name === 'Ajustes') iconName = 'cog';
-          return <Icon name={iconName} size={size} color={color} />;
+          const tab = tabs.find(t => t.name === route.name);
+          return tab ? <Icon name={tab.icon} size={size} color={color} /> : null;
         },
       })}
     >
-      <Tab.Screen name="Catálogo" component={CatalogScreen} />
-      <Tab.Screen name="Pedidos" component={OrdersScreen} />
-      <Tab.Screen name="Carteira" component={WalletScreen} />
-      <Tab.Screen name="Ajustes" component={SettingsScreen} />
+      {tabs.map(tab => (
+        <Tab.Screen key={tab.name} name={tab.name} component={tab.component} />
+      ))}
     </Tab.Navigator>
   );
 }

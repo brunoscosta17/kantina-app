@@ -10,7 +10,18 @@ export default function SettingsScreen() {
   const tenantCode = useAuth((s) => s.tenantCode);
   const tenantId = useAuth((s) => s.tenantId);
   const token = useAuth((s) => s.token);
+  const role = useAuth((s) => s.role);
   const logout = useAuth((s) => s.logout);
+
+  const roleLabel = {
+    ADMIN: 'Administrador',
+    GESTOR: 'Gestor',
+    OPERADOR: 'Operador',
+    RESPONSAVEL: 'Responsável',
+    ALUNO: 'Aluno',
+  } as const;
+
+  const getRoleLabel = (r?: string) => r ? roleLabel[r as keyof typeof roleLabel] ?? r : '(não definido)';
 
   const apiUrl =
     Constants.expoConfig?.extra?.apiUrl ?? 'http://10.0.2.2:3000';
@@ -43,6 +54,9 @@ export default function SettingsScreen() {
 
         <Text style={{ color: COLORS.text, fontWeight: '600', marginTop: 12 }}>Tenant</Text>
         <Text style={{ color: COLORS.greenDark }}>{tenantId ?? '(não definido)'}</Text>
+
+        <Text style={{ color: COLORS.text, fontWeight: '600', marginTop: 12 }}>Perfil</Text>
+        <Text style={{ color: COLORS.greenDark }}>{getRoleLabel(role)}</Text>
 
         <Text style={{ color: COLORS.text, fontWeight: '600', marginTop: 12 }}>Sessão</Text>
         <Text style={{ color: COLORS.orange }}>
