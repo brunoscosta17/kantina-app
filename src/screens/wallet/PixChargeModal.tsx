@@ -3,15 +3,29 @@ import { Image, Modal, View } from 'react-native';
 import { Button, RadioButton, Text, TextInput } from 'react-native-paper';
 import { COLORS } from '../../../theme';
 
-export default function PixChargeModal({ visible, onClose, onCharge, charge, student }: {
+function formatCurrency(value: string) {
+  const digits = value.replace(/\D/g, '');
+  const number = Number(digits) / 100;
+  return number.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+export default function PixChargeModal({ visible, onClose, onCharge, charge, student, minChargeCents = 0 }: {
   visible: boolean;
   onClose: () => void;
   onCharge: (valueCents: number, method: 'pix' | 'card') => void;
   charge?: any;
   student?: any;
+  minChargeCents?: number;
 }) {
   const [value, setValue] = useState('');
   const [method, setMethod] = useState<'pix' | 'card'>('pix');
+
+  const handleChangeValue = (text: string) => {
+    setValue(text.replace(/\D/g, ''));
+  };
+
+  const valueCents = Number(value);
+  const isValid = valueCents >= (minChargeCents ?? 0);
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
@@ -33,13 +47,19 @@ export default function PixChargeModal({ visible, onClose, onCharge, charge, stu
                 </View>
               </RadioButton.Group>
               <TextInput
-                label="Valor (R$)"
-                value={value}
-                onChangeText={setValue}
+                label={`Valor (R$) - mínimo ${(minChargeCents/100).toFixed(2)}`}
+                value={formatCurrency(value)}
+                onChangeText={handleChangeValue}
                 keyboardType="numeric"
                 style={{ marginBottom: 16 }}
+                maxLength={10}
               />
-              <Button mode="contained" style={{ backgroundColor: COLORS.greenDark }} onPress={() => onCharge(Math.round(Number(value.replace(/\D/g, '')) * 100), method)}>
+              <Button
+                mode="contained"
+                style={{ backgroundColor: COLORS.greenDark }}
+                onPress={() => onCharge(valueCents, method)}
+                disabled={!isValid}
+              >
                 Gerar cobrança
               </Button>
               <Button onPress={onClose} style={{ marginTop: 8 }}>Cancelar</Button>

@@ -14,6 +14,15 @@ export default function WalletScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [charge, setCharge] = useState<any>(null);
+  const [minChargeCents, setMinChargeCents] = useState<number>(0);
+
+  React.useEffect(() => {
+    if (tenantId) {
+      api.get(`/tenants/${tenantId}`).then(({ data }) => {
+        setMinChargeCents(data.minChargeCents ?? 0);
+      });
+    }
+  }, [tenantId]);
 
   React.useEffect(() => {
     if (role === 'RESPONSAVEL' && token && tenantId) {
@@ -69,6 +78,7 @@ export default function WalletScreen() {
         onCharge={handleCharge}
         charge={charge}
         student={selectedStudent}
+        minChargeCents={minChargeCents}
       />
     </SafeAreaView>
   );
