@@ -29,12 +29,17 @@ export default function WalletScreen() {
     setModalVisible(true);
   };
 
-  const handleCharge = async (valueCents: number) => {
+  const handleCharge = async (valueCents: number, method: 'pix' | 'card') => {
     if (!selectedStudent) return;
-    const { data } = await api.post(`/wallets/${selectedStudent.id}/pix-charge`, { valueCents }, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setCharge(data);
+    if (method === 'pix') {
+      const { data } = await api.post(`/wallets/${selectedStudent.id}/pix-charge`, { valueCents }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setCharge(data);
+    } else {
+      // Em breve: integração cartão de crédito
+      setCharge({ method: 'card' });
+    }
   };
 
   return (
