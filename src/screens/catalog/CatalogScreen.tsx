@@ -1,51 +1,50 @@
-// import { useEffect, useState } from 'react';
-// import { FlatList, SafeAreaView, Text, View } from 'react-native';
-// import { getCatalog } from '../../services/catalog';
-
-// export default function CatalogScreen() {
-//   const [items, setItems] = useState<any[]>([]);
-//   useEffect(() => { getCatalog().then(setItems).catch(console.error); }, []);
-//   return (
-//     <SafeAreaView style={{ flex: 1, padding: 16 }}>
-//       <FlatList
-//         data={items}
-//         keyExtractor={(i) => i.id}
-//         renderItem={({ item }) => (
-//           <View style={{ paddingVertical: 12, borderBottomWidth: 1, borderColor: '#eee' }}>
-//             <Text style={{ fontWeight: '600' }}>{item.name}</Text>
-//             <Text>R$ {(item.priceCents/100).toFixed(2)}</Text>
-//             <Text style={{ color: '#666' }}>{item.category?.name}</Text>
-//           </View>
-//         )}
-//       />
-//     </SafeAreaView>
-//   );
-// }
-
-import { FlatList, SafeAreaView } from 'react-native';
-import { Button, Text } from 'react-native-paper';
+import { useEffect, useState } from 'react';
+import { FlatList, SafeAreaView, View } from 'react-native';
+import { ActivityIndicator, Text } from 'react-native-paper';
 import { COLORS } from '../../../theme';
+import { getCatalog, type CatalogItem } from '../../services/catalog';
 
 export default function CatalogScreen() {
-  // Mock de dados e função de clique
-  const items = [
-    { id: '1', name: 'Coxinha', description: 'Frango com catupiry', price: '6.00' },
-    { id: '2', name: 'Suco', description: 'Laranja natural', price: '4.00' },
-  ];
-  const onProductPress = (item: any) => {};
+  const [items, setItems] = useState<CatalogItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const data = await getCatalog();
+        if (mounted) {
+          setItems(data);
+        }
+      } catch (e) {
+        console.error('Erro ao carregar catálogo', e);
+        if (mounted) setError('Falha ao carregar catálogo.');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.cream, padding: 16 }}>
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator />
+        </View>
+      ) : error ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ color: COLORS.text }}>{error}</Text>
+        </View>
+      ) : (
         <FlatList
-          // ListHeaderComponent={() => (
-          //   <Text style={{ color: COLORS.orange, fontSize: 28, fontWeight: '700', marginBottom: 12 }}>
-          //     Catálogo
-          //   </Text>
-          // )}
           data={items}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <Button
-              mode="outlined"
+            <View
               style={{
                 backgroundColor: '#fff',
                 borderColor: COLORS.green,
@@ -57,19 +56,18 @@ export default function CatalogScreen() {
                 shadowRadius: 4,
                 elevation: 2,
               }}
-              labelStyle={{ color: COLORS.text, fontWeight: '600', fontSize: 16 }}
-              onPress={() => onProductPress(item)}
             >
-              {item.name}
-              {"\n"}
-              <Text style={{ color: '#666', marginTop: 4 }}>{item.description}</Text>
-              {"\n"}
-              <Text style={{ color: COLORS.greenDark, marginTop: 4 }}>
-                R$ {item.price}
+              <Text style={{ color: COLORS.text, fontWeight: '600', fontSize: 16 }}>{item.name}</Text>
+              {item.category && (
+                <Text style={{ color: '#666', marginTop: 2 }}>{item.category.name}</Text>
+              )}
+              <Text style={{ color: COLORS.greenDark, marginTop: 4, fontWeight: '700' }}>
+                R$ {(item.priceCents / 100).toFixed(2).replace('.', ',')}
               </Text>
-            </Button>
+            </View>
           )}
         />
+      )}
     </SafeAreaView>
   );
 }

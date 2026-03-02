@@ -5,6 +5,8 @@ import { Button, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '../../../theme';
 import { useAuth } from '../../store/auth';
+import { updateTenantPixConfig } from '../../services/tenant';
+import PixConfigScreen from './PixConfigScreen';
 
 export default function SettingsScreen() {
   const tenantCode = useAuth((s) => s.tenantCode);
@@ -14,6 +16,8 @@ export default function SettingsScreen() {
   const logout = useAuth((s) => s.logout);
 
   const [alunos, setAlunos] = React.useState<any[]>([]);
+  const [showPixConfig, setShowPixConfig] = React.useState(false);
+  const [tenantData, setTenantData] = React.useState<any | null>(null);
   React.useEffect(() => {
     if (role === 'RESPONSAVEL' && token && tenantId) {
       import('../../services/students').then(({ getStudentsOfResponsible }) => {
@@ -21,6 +25,14 @@ export default function SettingsScreen() {
       });
     }
   }, [role, token, tenantId]);
+
+  React.useEffect(() => {
+    if (tenantId && (role === 'ADMIN' || role === 'GESTOR')) {
+      import('../../lib/api').then(({ default: api }) => {
+        api.get(`/tenants/${tenantId}`).then(({ data }) => setTenantData(data));
+      });
+    }
+  }, [tenantId, role]);
 
   const roleLabel = {
     ADMIN: 'Administrador',
@@ -72,6 +84,69 @@ export default function SettingsScreen() {
           {token ? 'Logado' : 'Deslogado'}
         </Text>
       </View>
+
+      {(role === 'ADMIN' || role === 'GESTOR') && tenantId && tenantData && (
+        <View
+          style={{
+            marginBottom: 24,
+            padding: 16,
+            backgroundColor: '#fff',
+            borderRadius: 8,
+            shadowColor: '#000',
+            shadowOpacity: 0.05,
+            shadowRadius: 4,
+            elevation: 2,
+          }}
+        >
+          <Text
+            style={{
+              fontWeight: 'bold',
+              fontSize: 16,
+              marginBottom: 8,
+              color: COLORS.orange,
+            }}
+          >
+            Configuração Pix da cantina
+          </Text>
+
+          {!showPixConfig ? (
+            <>
+              <Text style={{ color: COLORS.text, marginBottom: 4 }}>
+                Provedor atual: {tenantData.pixProvider ?? '(não definido)'}
+              </Text>
+              <Text style={{ color: COLORS.text, marginBottom: 8 }}>
+                Mínimo de recarga:{' '}
+                R${' '}
+                {((tenantData.minChargeCents ?? 0) / 100)
+                  .toFixed(2)
+                  .replace('.', ',')}
+              </Text>
+              <Button
+                mode="outlined"
+                onPress={() => setShowPixConfig(true)}
+                style={{ borderRadius: 14 }}
+              >
+                Editar configuração Pix
+              </Button>
+            </>
+          ) : (
+            <PixConfigScreen
+              initial={tenantData}
+              onSave={async (data) => {
+                if (!token || !tenantId) return;
+                try {
+                  await updateTenantPixConfig(token, tenantId, data);
+                  const updated = { ...tenantData, ...data };
+                  setTenantData(updated);
+                  setShowPixConfig(false);
+                } catch (e) {
+                  Alert.alert('Erro', 'Falha ao salvar configuração Pix.');
+                }
+              }}
+            />
+          )}
+        </View>
+      )}
 
       {role === 'RESPONSAVEL' && (
         <View style={{ marginTop: 24, padding: 16, backgroundColor: '#fff', borderRadius: 8, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 }}>

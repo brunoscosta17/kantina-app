@@ -3,13 +3,26 @@ import { ScrollView, View } from 'react-native';
 import { Button, RadioButton, Text, TextInput } from 'react-native-paper';
 import { COLORS } from '../../../theme';
 
-export default function PixConfigScreen({ onSave }: { onSave?: (data: any) => void }) {
+type PixConfig = {
+  pixProvider?: string | null;
+  pixKey?: string | null;
+  gerencianetClientId?: string | null;
+  gerencianetClientSecret?: string | null;
+  mercadopagoAccessToken?: string | null;
+  mercadopagoPublicKey?: string | null;
+  minChargeCents?: number | null;
+};
+
+export default function PixConfigScreen({ onSave, initial }: { onSave?: (data: PixConfig) => void; initial?: PixConfig }) {
   const [provider, setProvider] = useState('gerencianet');
-  const [pixKey, setPixKey] = useState('');
-  const [gnClientId, setGnClientId] = useState('');
-  const [gnClientSecret, setGnClientSecret] = useState('');
-  const [mpAccessToken, setMpAccessToken] = useState('');
-  const [mpPublicKey, setMpPublicKey] = useState('');
+  const [pixKey, setPixKey] = useState(initial?.pixKey ?? '');
+  const [gnClientId, setGnClientId] = useState(initial?.gerencianetClientId ?? '');
+  const [gnClientSecret, setGnClientSecret] = useState(initial?.gerencianetClientSecret ?? '');
+  const [mpAccessToken, setMpAccessToken] = useState(initial?.mercadopagoAccessToken ?? '');
+  const [mpPublicKey, setMpPublicKey] = useState(initial?.mercadopagoPublicKey ?? '');
+  const [minCharge, setMinCharge] = useState(
+    typeof initial?.minChargeCents === 'number' ? (initial!.minChargeCents / 100).toFixed(2) : '0.00',
+  );
 
   return (
     <ScrollView contentContainerStyle={{ padding: 24 }}>
@@ -34,7 +47,28 @@ export default function PixConfigScreen({ onSave }: { onSave?: (data: any) => vo
           <TextInput label="Public Key (Mercado Pago)" value={mpPublicKey} onChangeText={setMpPublicKey} style={{ marginBottom: 16 }} />
         </>
       )}
-      <Button mode="contained" style={{ backgroundColor: COLORS.greenDark }} onPress={() => onSave?.({ provider, pixKey, gnClientId, gnClientSecret, mpAccessToken, mpPublicKey })}>
+      <TextInput
+        label="Valor mínimo de recarga (R$)"
+        value={minCharge}
+        onChangeText={setMinCharge}
+        keyboardType="numeric"
+        style={{ marginBottom: 16 }}
+      />
+      <Button
+        mode="contained"
+        style={{ backgroundColor: COLORS.greenDark }}
+        onPress={() =>
+          onSave?.({
+            pixProvider: provider,
+            pixKey,
+            gerencianetClientId: gnClientId,
+            gerencianetClientSecret: gnClientSecret,
+            mercadopagoAccessToken: mpAccessToken,
+            mercadopagoPublicKey: mpPublicKey,
+            minChargeCents: Math.round(Number(minCharge.replace(',', '.')) * 100) || 0,
+          })
+        }
+      >
         Salvar
       </Button>
     </ScrollView>
