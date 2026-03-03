@@ -14,8 +14,8 @@ const extraUrl =
 const isWeb = Platform.OS === 'web';
 const isDev = typeof window !== 'undefined' && window.location && window.location.hostname === 'localhost';
 
-// URL da API Cloud Run
-const PROD_API_URL = 'https://kantina-api-380728917745.southamerica-east1.run.app';
+// URL da API em produção (Railway)
+const PROD_API_URL = 'https://kantina-api-production.up.railway.app';
 
 let API_URL = envUrl;
 if (!API_URL) {

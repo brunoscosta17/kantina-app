@@ -24,7 +24,7 @@
       "predictiveBackGestureEnabled": false
     },
     "extra": {
-      "apiUrl": "process.env.NODE_ENV==='development' && typeof window !== 'undefined' ? 'http://localhost:3000' : 'https://kantina-api-380728917745.southamerica-east1.run.app'"
+      "apiUrl": "https://kantina-api-production.up.railway.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"

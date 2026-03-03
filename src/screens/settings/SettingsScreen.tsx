@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 import React from 'react';
-import { Alert, View } from 'react-native';
+import { Alert, ScrollView, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '../../../theme';
@@ -61,7 +61,8 @@ export default function SettingsScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.cream, padding: 16 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.cream }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
       {/* Título removido, apenas conteúdo */}
       {/* <View style={{ marginBottom: 12 }}>
         <Text style={{ color: COLORS.orange, fontSize: 28, fontWeight: '700' }}>
@@ -176,6 +177,7 @@ export default function SettingsScreen() {
           Sair
         </Button>
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
