@@ -6,8 +6,8 @@ const NAME = "Kantina";
 const BUNDLE_ID = "com.kantina.app";
 const PACKAGE = "com.kantina.app";
 
-// Cloud Run (produção)
-const PROD_API_URL = "https://kantina-api-380728917745.southamerica-east1.run.app";
+// API em produção (Railway)
+const PROD_API_URL = "https://kantina-api-production.up.railway.app";
 
 // Usa env se existir (dev/local/CI), senão produção
 const apiUrl = process.env.EXPO_PUBLIC_API_URL ?? PROD_API_URL;
