@@ -133,6 +133,7 @@ export default function SettingsScreen() {
           ) : (
             <PixConfigScreen
               initial={tenantData}
+              onCancel={() => setShowPixConfig(false)}
               onSave={async (data) => {
                 if (!token || !tenantId) return;
                 try {
@@ -172,7 +173,7 @@ export default function SettingsScreen() {
         </View>
       )}
 
-      <View style={{ marginTop: 'auto' }}>
+      <View style={{ marginTop: 24 }}>
         <Button mode="contained" style={{ backgroundColor: COLORS.greenDark }} onPress={onLogout}>
           Sair
         </Button>

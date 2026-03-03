@@ -13,7 +13,13 @@ type PixConfig = {
   minChargeCents?: number | null;
 };
 
-export default function PixConfigScreen({ onSave, initial }: { onSave?: (data: PixConfig) => void; initial?: PixConfig }) {
+type PixConfigScreenProps = {
+  onSave?: (data: PixConfig) => void;
+  initial?: PixConfig;
+  onCancel?: () => void;
+};
+
+export default function PixConfigScreen({ onSave, initial, onCancel }: PixConfigScreenProps) {
   const [provider, setProvider] = useState('gerencianet');
   const [pixKey, setPixKey] = useState(initial?.pixKey ?? '');
   const [gnClientId, setGnClientId] = useState(initial?.gerencianetClientId ?? '');
@@ -26,10 +32,10 @@ export default function PixConfigScreen({ onSave, initial }: { onSave?: (data: P
 
   return (
     <ScrollView contentContainerStyle={{ padding: 24 }}>
-      <Text style={{ fontSize: 24, fontWeight: '700', color: COLORS.orange, marginBottom: 16 }}>Configuração Pix</Text>
+      {/* <Text style={{ fontSize: 24, fontWeight: '700', color: COLORS.orange, marginBottom: 16 }}>Configuração Pix</Text> */}
       <Text style={{ marginBottom: 8 }}>Selecione o provedor Pix:</Text>
       <RadioButton.Group onValueChange={setProvider} value={provider}>
-        <View style={{ flexDirection: 'row', gap: 16 }}>
+        <View style={{ gap: 4 }}>
           <RadioButton.Item label="Gerencianet" value="gerencianet" />
           <RadioButton.Item label="Mercado Pago" value="mercadopago" />
         </View>
@@ -71,6 +77,16 @@ export default function PixConfigScreen({ onSave, initial }: { onSave?: (data: P
       >
         Salvar
       </Button>
+      {onCancel && (
+        <Button
+          mode="text"
+          onPress={onCancel}
+          style={{ marginTop: 8 }}
+          textColor={COLORS.orange}
+        >
+          Cancelar
+        </Button>
+      )}
     </ScrollView>
   );
 }
