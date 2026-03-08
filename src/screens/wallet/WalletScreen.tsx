@@ -32,6 +32,8 @@ export default function WalletScreen() {
     }
   }, [role, token, tenantId]);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleAddCredit = (student: any) => {
     setSelectedStudent(student);
     setCharge(null);
@@ -40,14 +42,22 @@ export default function WalletScreen() {
 
   const handleCharge = async (valueCents: number, method: 'pix' | 'card') => {
     if (!selectedStudent) return;
+    setIsLoading(true);
     if (method === 'pix') {
-      const { data } = await api.post(`/wallets/${selectedStudent.id}/pix-charge`, { valueCents }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setCharge(data);
+      try {
+        const { data } = await api.post(`/wallets/${selectedStudent.id}/pix-charge`, { valueCents }, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setCharge(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
     } else {
       // Em breve: integração cartão de crédito
       setCharge({ method: 'card' });
+      setIsLoading(false);
     }
   };
 
@@ -162,6 +172,7 @@ export default function WalletScreen() {
         charge={charge}
         student={selectedStudent}
         minChargeCents={minChargeCents}
+        isLoading={isLoading}
       />
     </SafeAreaView>
   );

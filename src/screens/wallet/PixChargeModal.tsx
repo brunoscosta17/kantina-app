@@ -10,13 +10,14 @@ function formatCurrency(value: string) {
   return number.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-export default function PixChargeModal({ visible, onClose, onCharge, charge, student, minChargeCents = 0 }: {
+export default function PixChargeModal({ visible, onClose, onCharge, charge, student, minChargeCents = 0, isLoading = false }: {
   visible: boolean;
   onClose: () => void;
   onCharge: (valueCents: number, method: 'pix' | 'card') => void;
   charge?: any;
   student?: any;
   minChargeCents?: number;
+  isLoading?: boolean;
 }) {
   const [value, setValue] = useState('');
   const [method, setMethod] = useState<'pix' | 'card'>('pix');
@@ -72,11 +73,12 @@ export default function PixChargeModal({ visible, onClose, onCharge, charge, stu
                 style={{ backgroundColor: COLORS.greenDark, paddingVertical: 6, borderRadius: 8, marginBottom: 8 }}
                 labelStyle={{ fontSize: 16, fontWeight: 'bold' }}
                 onPress={() => onCharge(valueCents, method)}
-                disabled={!isValid}
+                disabled={!isValid || isLoading}
+                loading={isLoading}
               >
-                Gerar Cobrança Pix
+                {isLoading ? 'Gerando...' : 'Gerar Cobrança Pix'}
               </Button>
-              <Button mode="text" onPress={onClose} textColor={COLORS.textVariant}>Cancelar</Button>
+              <Button mode="text" onPress={onClose} textColor={COLORS.textVariant} disabled={isLoading}>Cancelar</Button>
             </>
           ) : method === 'pix' ? (
             <>
