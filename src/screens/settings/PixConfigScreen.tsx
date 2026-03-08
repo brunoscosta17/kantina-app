@@ -33,36 +33,45 @@ export default function PixConfigScreen({ onSave, initial, onCancel }: PixConfig
   return (
     <ScrollView contentContainerStyle={{ padding: 24 }}>
       {/* <Text style={{ fontSize: 24, fontWeight: '700', color: COLORS.orange, marginBottom: 16 }}>Configuração Pix</Text> */}
-      <Text style={{ marginBottom: 8 }}>Selecione o provedor Pix:</Text>
+      <Text style={{ marginBottom: 8, fontSize: 16, fontWeight: '600', color: COLORS.text }}>Selecione o provedor Pix:</Text>
       <RadioButton.Group onValueChange={setProvider} value={provider}>
-        <View style={{ gap: 4 }}>
-          <RadioButton.Item label="Gerencianet" value="gerencianet" />
-          <RadioButton.Item label="Mercado Pago" value="mercadopago" />
+        <View style={{ gap: 4, marginBottom: 16 }}>
+          <RadioButton.Item label="Mercado Pago (Recomendado)" value="mercadopago" labelStyle={{ color: COLORS.text }} />
+          <RadioButton.Item label="Efí (Gerencianet)" value="gerencianet" labelStyle={{ color: COLORS.textVariant }} />
         </View>
       </RadioButton.Group>
-      <TextInput label="Chave Pix" value={pixKey} onChangeText={setPixKey} style={{ marginBottom: 16 }} />
-      {provider === 'gerencianet' && (
-        <>
-          <TextInput label="Client ID (Gerencianet)" value={gnClientId} onChangeText={setGnClientId} style={{ marginBottom: 8 }} />
-          <TextInput label="Client Secret (Gerencianet)" value={gnClientSecret} onChangeText={setGnClientSecret} style={{ marginBottom: 16 }} />
-        </>
-      )}
+
       {provider === 'mercadopago' && (
-        <>
-          <TextInput label="Access Token (Mercado Pago)" value={mpAccessToken} onChangeText={setMpAccessToken} style={{ marginBottom: 8 }} />
-          <TextInput label="Public Key (Mercado Pago)" value={mpPublicKey} onChangeText={setMpPublicKey} style={{ marginBottom: 16 }} />
-        </>
+        <View style={{ backgroundColor: '#f9f9f9', padding: 16, borderRadius: 8, marginBottom: 16 }}>
+           <Text style={{ marginBottom: 12, color: COLORS.textVariant, fontSize: 13 }}>
+            Insira suas credenciais de produção do Mercado Pago para receber pagamentos Pix diretos na sua conta.
+          </Text>
+          <TextInput mode="outlined" label="Access Token" value={mpAccessToken} onChangeText={setMpAccessToken} style={{ marginBottom: 12 }} secureTextEntry />
+          <TextInput mode="outlined" label="Public Key" value={mpPublicKey} onChangeText={setMpPublicKey} style={{ marginBottom: 8 }} />
+        </View>
       )}
+
+      {provider === 'gerencianet' && (
+        <View style={{ backgroundColor: '#f9f9f9', padding: 16, borderRadius: 8, marginBottom: 16 }}>
+          <TextInput mode="outlined" label="Chave Pix" value={pixKey} onChangeText={setPixKey} style={{ marginBottom: 12 }} />
+          <TextInput mode="outlined" label="Client ID" value={gnClientId} onChangeText={setGnClientId} style={{ marginBottom: 12 }} />
+          <TextInput mode="outlined" label="Client Secret" value={gnClientSecret} onChangeText={setGnClientSecret} style={{ marginBottom: 8 }} secureTextEntry />
+        </View>
+      )}
+
       <TextInput
+        mode="outlined"
         label="Valor mínimo de recarga (R$)"
         value={minCharge}
         onChangeText={setMinCharge}
         keyboardType="numeric"
-        style={{ marginBottom: 16 }}
+        style={{ marginBottom: 24 }}
       />
+      
       <Button
         mode="contained"
-        style={{ backgroundColor: COLORS.greenDark }}
+        style={{ backgroundColor: COLORS.greenDark, paddingVertical: 6, borderRadius: 8 }}
+        labelStyle={{ fontSize: 16, fontWeight: 'bold' }}
         onPress={() =>
           onSave?.({
             pixProvider: provider,
@@ -75,7 +84,7 @@ export default function PixConfigScreen({ onSave, initial, onCancel }: PixConfig
           })
         }
       >
-        Salvar
+        Salvar Configurações
       </Button>
       {onCancel && (
         <Button

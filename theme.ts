@@ -6,6 +6,7 @@ export const COLORS = {
   orange: '#E8741A',
   cream: '#F6EFE8',
   text: '#1F2937',
+  textVariant: '#6B7280',
 };
 
 export const theme = {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Image, Modal, View } from 'react-native';
+import { Image, Modal, View, Alert } from 'react-native';
 import { Button, RadioButton, Text, TextInput } from 'react-native-paper';
+import * as Clipboard from 'expo-clipboard';
 import { COLORS } from '../../../theme';
 
 function formatCurrency(value: string) {
@@ -24,59 +25,86 @@ export default function PixChargeModal({ visible, onClose, onCharge, charge, stu
     setValue(text.replace(/\D/g, ''));
   };
 
+  const handleCopy = async () => {
+    if (charge?.pixCopiaCola) {
+      await Clipboard.setStringAsync(charge.pixCopiaCola);
+      Alert.alert('Código Copiado!', 'O código Pix (Copia e Cola) foi enviado para sua área de transferência.');
+    }
+  };
+
   const valueCents = Number(value);
   const isValid = valueCents >= (minChargeCents ?? 0);
 
   return (
-    <Modal visible={visible} animationType="slide" transparent>
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.2)', justifyContent: 'center', alignItems: 'center' }}>
-        <View style={{ backgroundColor: '#fff', borderRadius: 16, padding: 24, width: 320 }}>
-          <Text style={{ fontSize: 20, fontWeight: '700', color: COLORS.orange, marginBottom: 12 }}>Adicionar saldo</Text>
+    <Modal visible={visible} animationType="fade" transparent>
+      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+        <View style={{ backgroundColor: '#fff', borderRadius: 24, padding: 24, width: '100%', maxWidth: 360, elevation: 10 }}>
+          
+          <Text style={{ fontSize: 22, fontWeight: '800', color: COLORS.orange, marginBottom: 8, textAlign: 'center' }}>Adicionar saldo</Text>
           {student && (
-            <Text style={{ fontSize: 16, color: COLORS.text, marginBottom: 8, fontWeight: '600' }}>
-              Aluno: {student.name}
+            <Text style={{ fontSize: 15, color: COLORS.textVariant, marginBottom: 20, textAlign: 'center', fontWeight: '500' }}>
+              Carteira do aluno: <Text style={{ color: COLORS.text, fontWeight: '700' }}>{student.name}</Text>
             </Text>
           )}
+
           {!charge ? (
             <>
-              <Text style={{ marginBottom: 8 }}>Selecione o método de pagamento:</Text>
-              <RadioButton.Group onValueChange={v => setMethod(v as 'pix' | 'card')} value={method}>
-                <View style={{ flexDirection: 'row', gap: 16, marginBottom: 8, paddingLeft: 0 }}>
-                  <RadioButton.Item label="Pix" value="pix" style={{ paddingLeft: 0 }} />
-                  <RadioButton.Item label="Cartão de Crédito" value="card" style={{ paddingLeft: 0 }} />
+              <Text style={{ marginBottom: 12, fontWeight: '600', color: COLORS.text }}>Selecione a forma de pagamento:</Text>
+              
+              <RadioButton.Group onValueChange={(v: string) => setMethod(v as 'pix' | 'card')} value={method}>
+                <View style={{ flexDirection: 'row', gap: 16, marginBottom: 16 }}>
+                  <RadioButton.Item label="Pix" value="pix" labelStyle={{ color: COLORS.text }} />
                 </View>
               </RadioButton.Group>
+              
               <TextInput
+                mode="outlined"
                 label={`Valor (R$) - mínimo ${(minChargeCents/100).toFixed(2)}`}
                 value={formatCurrency(value)}
                 onChangeText={handleChangeValue}
                 keyboardType="numeric"
-                style={{ marginBottom: 16 }}
+                style={{ marginBottom: 24 }}
                 maxLength={10}
               />
+              
               <Button
                 mode="contained"
-                style={{ backgroundColor: COLORS.greenDark }}
+                style={{ backgroundColor: COLORS.greenDark, paddingVertical: 6, borderRadius: 8, marginBottom: 8 }}
+                labelStyle={{ fontSize: 16, fontWeight: 'bold' }}
                 onPress={() => onCharge(valueCents, method)}
                 disabled={!isValid}
               >
-                Gerar cobrança
+                Gerar Cobrança Pix
               </Button>
-              <Button onPress={onClose} style={{ marginTop: 8 }}>Cancelar</Button>
+              <Button mode="text" onPress={onClose} textColor={COLORS.textVariant}>Cancelar</Button>
             </>
           ) : method === 'pix' ? (
             <>
-              <Text style={{ marginBottom: 8 }}>Escaneie o QR Code Pix abaixo ou copie o código para pagar:</Text>
-              <Image source={{ uri: charge.qrCodeImageUrl }} style={{ width: 180, height: 180, marginBottom: 8 }} />
-              <Text selectable style={{ fontSize: 13, color: COLORS.text, marginBottom: 8 }}>{charge.pixCopiaCola}</Text>
-              <Button onPress={onClose} style={{ marginTop: 8 }}>Fechar</Button>
+              <Text style={{ marginBottom: 16, textAlign: 'center', color: COLORS.textVariant, fontSize: 14 }}>
+                Escaneie o QR Code abaixo pelo app do seu banco ou copie o código Pix.
+              </Text>
+
+              <View style={{ alignItems: 'center', marginBottom: 24 }}>
+                <View style={{ padding: 12, backgroundColor: '#fff', borderRadius: 16, borderWidth: 1, borderColor: '#eee' }}>
+                  <Image source={{ uri: charge.qrCodeImageUrl }} style={{ width: 220, height: 220 }} />
+                </View>
+              </View>
+
+              <Button
+                mode="contained"
+                icon="content-copy"
+                onPress={handleCopy}
+                style={{ backgroundColor: COLORS.orange, marginBottom: 12, paddingVertical: 6, borderRadius: 8 }}
+                labelStyle={{ fontSize: 16, fontWeight: 'bold' }}
+              >
+                Copiar código Pix
+              </Button>
+              
+              <Button mode="outlined" onPress={onClose} textColor={COLORS.textVariant} style={{ borderRadius: 8, borderColor: '#eee' }}>
+                Fechar
+              </Button>
             </>
-          ) : (
-            <>
-              <Text style={{ marginBottom: 8 }}>Fluxo de cartão de crédito em breve!</Text>
-              <Button onPress={onClose} style={{ marginTop: 8 }}>Fechar</Button>
-            </>
-          )}
+          ) : null}
         </View>
       </View>
     </Modal>
