@@ -188,7 +188,6 @@ export default function WalletScreen() {
         onClose={() => setModalVisible(false)}
         onCharge={handleCharge}
         onSuccess={() => {
-          setModalVisible(false);
           onRefresh();
         }}
         charge={charge}
