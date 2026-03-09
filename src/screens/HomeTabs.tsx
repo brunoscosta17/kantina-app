@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '../../theme';
 import { useAuth } from '../store/auth';
 import { RoleKey, roleTabs } from './roleTabs';
+import NotificationBell from '../components/NotificationBell';
 // Função para suavizar cor (mistura com branco)
 function lighten(color: string, percent: number) {
   // Aceita cor hex tipo #RRGGBB
@@ -45,6 +46,7 @@ export default function HomeTabs() {
           elevation: 12,
           height: 70,
         },
+        headerRight: () => <NotificationBell />,
         tabBarItemStyle: {
           marginTop: 8,
         },

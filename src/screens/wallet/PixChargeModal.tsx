@@ -3,6 +3,7 @@ import { Image, Modal, View, Alert } from 'react-native';
 import { Button, RadioButton, Text, TextInput } from 'react-native-paper';
 import * as Clipboard from 'expo-clipboard';
 import { COLORS } from '../../../theme';
+import api from '../../lib/api';
 
 function formatCurrency(value: string) {
   const digits = value.replace(/\D/g, '');
@@ -10,10 +11,11 @@ function formatCurrency(value: string) {
   return number.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-export default function PixChargeModal({ visible, onClose, onCharge, charge, student, minChargeCents = 0, isLoading = false }: {
+export default function PixChargeModal({ visible, onClose, onCharge, onSuccess, charge, student, minChargeCents = 0, isLoading = false }: {
   visible: boolean;
   onClose: () => void;
   onCharge: (valueCents: number, method: 'pix' | 'card') => void;
+  onSuccess?: () => void;
   charge?: any;
   student?: any;
   minChargeCents?: number;
@@ -21,6 +23,40 @@ export default function PixChargeModal({ visible, onClose, onCharge, charge, stu
 }) {
   const [value, setValue] = useState('');
   const [method, setMethod] = useState<'pix' | 'card'>('pix');
+  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  // Reset timer on new charge
+  React.useEffect(() => {
+    if (charge) {
+      setTimeLeft(600);
+      setIsSuccess(false);
+    }
+  }, [charge]);
+
+  // Timer countdown
+  React.useEffect(() => {
+    if (!charge || timeLeft <= 0 || isSuccess) return;
+    const interval = setInterval(() => setTimeLeft((t) => t - 1), 1000);
+    return () => clearInterval(interval);
+  }, [charge, timeLeft, isSuccess]);
+
+  // Polling tx status
+  React.useEffect(() => {
+    if (!charge || !charge.chargeId || timeLeft <= 0 || isSuccess) return;
+    const interval = setInterval(async () => {
+      try {
+        const { data } = await api.get(`/wallets/transactions/${charge.chargeId}/status`);
+        if (data.status === 'paid' || data.status === 'approved') { // Handling both just in case
+          setIsSuccess(true);
+          if (onSuccess) onSuccess();
+        }
+      } catch (e) {
+        console.log('Erro polling pix', e);
+      }
+    }, 5000); // Check every 5s
+    return () => clearInterval(interval);
+  }, [charge, timeLeft, onSuccess, onClose]);
 
   const handleChangeValue = (text: string) => {
     setValue(text.replace(/\D/g, ''));
@@ -48,7 +84,21 @@ export default function PixChargeModal({ visible, onClose, onCharge, charge, stu
             </Text>
           )}
 
-          {!charge ? (
+
+          {isSuccess ? (
+            <View style={{ alignItems: 'center', marginVertical: 24 }}>
+              <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: COLORS.greenDark, justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}>
+                <Text style={{ color: '#fff', fontSize: 32 }}>✓</Text>
+              </View>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: COLORS.greenDark, marginBottom: 8 }}>Pagamento Recebido!</Text>
+              <Text style={{ fontSize: 16, color: COLORS.textVariant, textAlign: 'center', marginBottom: 24 }}>
+                O saldo já foi adicionado à carteira.
+              </Text>
+              <Button mode="contained" onPress={onClose} style={{ backgroundColor: COLORS.orange, borderRadius: 8, width: '100%' }}>
+                Fechar
+              </Button>
+            </View>
+          ) : !charge ? (
             <>
               <Text style={{ marginBottom: 12, fontWeight: '600', color: COLORS.text }}>Selecione a forma de pagamento:</Text>
               
@@ -82,9 +132,19 @@ export default function PixChargeModal({ visible, onClose, onCharge, charge, stu
             </>
           ) : method === 'pix' ? (
             <>
-              <Text style={{ marginBottom: 16, textAlign: 'center', color: COLORS.textVariant, fontSize: 14 }}>
+              <Text style={{ textAlign: 'center', color: COLORS.textVariant, fontSize: 14 }}>
                 Escaneie o QR Code abaixo pelo app do seu banco ou copie o código Pix.
               </Text>
+
+              {timeLeft > 0 ? (
+                <Text style={{ textAlign: 'center', color: COLORS.orange, fontWeight: '700', fontSize: 20, marginVertical: 12 }}>
+                 ⏳ {Math.floor(timeLeft / 60).toString().padStart(2, '0')}:{(timeLeft % 60).toString().padStart(2, '0')}
+                </Text>
+              ) : (
+                <Text style={{ textAlign: 'center', color: '#B91C1C', fontWeight: '700', fontSize: 16, marginVertical: 12 }}>
+                  Tempo expirado. Gere outra cobrança.
+                </Text>
+              )}
 
               <View style={{ alignItems: 'center', marginBottom: 24 }}>
                 <View style={{ padding: 12, backgroundColor: '#fff', borderRadius: 16, borderWidth: 1, borderColor: '#eee' }}>
