@@ -11,6 +11,7 @@ import PixConfigScreen from './PixConfigScreen';
 export default function SettingsScreen() {
   const tenantCode = useAuth((s) => s.tenantCode);
   const tenantId = useAuth((s) => s.tenantId);
+  const tenantName = useAuth((s) => s.tenantName);
   const token = useAuth((s) => s.token);
   const role = useAuth((s) => s.role);
   const logout = useAuth((s) => s.logout);
@@ -71,11 +72,10 @@ export default function SettingsScreen() {
       </View> */}
 
       <View style={{ gap: 8, marginBottom: 20 }}>
-        <Text style={{ color: COLORS.text, fontWeight: '600' }}>API</Text>
-        <Text style={{ color: COLORS.greenDark }}>{apiUrl}</Text>
-
-        <Text style={{ color: COLORS.text, fontWeight: '600', marginTop: 12 }}>Tenant</Text>
-        <Text style={{ color: COLORS.greenDark }}>{tenantId ?? '(não definido)'}</Text>
+        <Text style={{ color: COLORS.text, fontWeight: '600' }}>Escola</Text>
+        <Text style={{ color: COLORS.greenDark }}>
+          {tenantCode && tenantName ? `${tenantCode} - ${tenantName}` : '(não definido)'}
+        </Text>
 
         <Text style={{ color: COLORS.text, fontWeight: '600', marginTop: 12 }}>Perfil</Text>
         <Text style={{ color: COLORS.greenDark }}>{getRoleLabel(role)}</Text>
