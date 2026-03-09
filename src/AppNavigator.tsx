@@ -2,6 +2,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeTabs from './screens/HomeTabs';
 import LoginScreen from './screens/LoginScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
+import RegisterScreen from './screens/RegisterScreen';
+import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import SelectSchoolScreen from './screens/SelectSchoolScreen';
 import { useAuth } from './store/auth';
 
@@ -25,7 +27,11 @@ export default function AppNavigator() {
           />
         </Stack.Group>
       ) : (
-        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Group>
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+        </Stack.Group>
       )}
     </Stack.Navigator>
   );

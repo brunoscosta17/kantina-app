@@ -11,6 +11,7 @@ import {
   useWindowDimensions
 } from 'react-native';
 import { Button, Checkbox, HelperText, Text, TextInput } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../store/auth';
 
 // Ajuste o caminho conforme seu projeto
@@ -28,6 +29,7 @@ const COLORS = {
 };
 
 export default function LoginScreen() {
+  const navigation = useNavigation<any>();
   const login = useAuth((s) => s.login);
   const tenantName = useAuth((s) => s.tenantName);
   const tenantCode = useAuth((s) => s.tenantCode);
@@ -269,10 +271,10 @@ export default function LoginScreen() {
 
             {/* Links */}
             <View style={styles.links}>
-              <Text style={styles.link}>
+              <Text style={styles.link} onPress={() => navigation.navigate('Register')}>
                 Não possui uma conta? <Text style={styles.linkStrong}>Cadastre-se</Text>
               </Text>
-              <Text style={styles.link}>
+              <Text style={styles.link} onPress={() => navigation.navigate('ForgotPassword')}>
                 Esqueceu a senha? <Text style={styles.linkStrong}>Clique aqui</Text>
               </Text>
             </View>
