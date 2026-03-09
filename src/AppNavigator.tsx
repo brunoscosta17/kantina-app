@@ -4,6 +4,7 @@ import LoginScreen from './screens/LoginScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
+import StudentLoginScreen from './screens/StudentLoginScreen';
 import SelectSchoolScreen from './screens/SelectSchoolScreen';
 import { useAuth } from './store/auth';
 
@@ -31,6 +32,7 @@ export default function AppNavigator() {
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Register" component={RegisterScreen} />
           <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+          <Stack.Screen name="StudentLogin" component={StudentLoginScreen} />
         </Stack.Group>
       )}
     </Stack.Navigator>

@@ -110,8 +110,7 @@ export default function LoginScreen() {
   }
 
   function handleStudentAccess() {
-    // placeholder (mantém layout)
-    setLoginError('Acesso do Aluno: implemente a navegação/fluxo aqui.');
+    navigation.navigate('StudentLogin');
   }
 
   const logoOpacity = useRef(new Animated.Value(0)).current;

@@ -28,6 +28,7 @@ type AuthState = {
 
   resolveTenant: (code: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
+  studentLogin: (accessCode: string) => Promise<void>;
 
   load: () => Promise<void>;
   logout: (opts?: { clearTenant?: boolean }) => Promise<void>;
@@ -94,6 +95,15 @@ export const useAuth = create<AuthState>((set, get) => ({
     // Log para futuras implementações
     console.log('[LOGIN] tenantCode:', tenantCode, 'tenantId:', tenantId);
     const { data } = await api.post<LoginResponse>('/auth/login', { email, password }, {
+      headers: { 'x-tenant': tenantId },
+    });
+    await get().setSession(data.accessToken, data.refreshToken, data.role);
+  },
+
+  studentLogin: async (accessCode) => {
+    const tenantId = get().tenantId;
+    if (!tenantId) throw new Error('Tenant não definido.');
+    const { data } = await api.post<LoginResponse>('/auth/student-login', { accessCode }, {
       headers: { 'x-tenant': tenantId },
     });
     await get().setSession(data.accessToken, data.refreshToken, data.role);

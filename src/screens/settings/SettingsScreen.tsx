@@ -162,6 +162,11 @@ export default function SettingsScreen() {
               <View key={a.id} style={{ marginBottom: 8, padding: 8, backgroundColor: '#BFE3D0', borderRadius: 6 }}>
                 <Text style={{ fontSize: 15, color: COLORS.greenDark, fontWeight: '500' }}>{a.name}</Text>
                 <Text style={{ fontSize: 13, color: COLORS.text }}>{a.classroom}</Text>
+                {a.accessCode ? (
+                  <Text style={{ fontSize: 14, color: COLORS.text, marginTop: 4 }}>
+                    Código de Acesso: <Text style={{ fontWeight: 'bold' }}>{a.accessCode}</Text>
+                  </Text>
+                ) : null}
                 {a.wallet && (
                   <Text style={{ fontSize: 15, color: COLORS.orange, fontWeight: '600', marginTop: 4 }}>
                     Saldo: R$ {(a.wallet.balanceCents / 100).toFixed(2).replace('.', ',')}
