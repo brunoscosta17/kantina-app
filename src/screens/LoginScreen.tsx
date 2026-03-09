@@ -42,36 +42,7 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
 
-  const { width: screenW, height: screenH } = useWindowDimensions();
-
-  // mesmo padding horizontal do container (20) => card ocupa "100%" desse miolo
-  const CARD_SIDE_PADDING = 20;
-  const cardWidth = screenW - CARD_SIDE_PADDING * 2;
-
-  // ajuste para a proporção real do seu arquivo (se for mais quadrada, mude aqui)
-  const LOGO_ASPECT = 16 / 9;
-
-  const [cardHeight, setCardHeight] = useState(0);
-
-  // esses valores precisam bater com seus paddings/margens do layout
-  const TOP_PADDING = 16;
-  const BOTTOM_PADDING = 20;
-  const HEADER_GAP = 12;
-
-  // espaço “fixo” que não é logo nem card (padding + margens)
-  const reserved = TOP_PADDING + BOTTOM_PADDING + HEADER_GAP;
-
-  // altura máxima que a logo pode ter para caber tudo na tela
-  const maxLogoHeight = Math.max(80, screenH - reserved - cardHeight);
-
-  // altura “natural” pela largura do card mantendo proporção
-  const naturalLogoHeight = cardWidth / LOGO_ASPECT;
-
-  // altura final da logo (nunca maior que o espaço disponível)
-  const logoHeight = Math.min(naturalLogoHeight, maxLogoHeight);
-
-  // e o width exatamente igual ao card
-  const logoStyle = { width: cardWidth, height: logoHeight };
+  // No dynamic logo calculations needed anymore.
 
   const emailError = useMemo(() => {
     const v = email.trim();
@@ -181,15 +152,11 @@ export default function LoginScreen() {
                 { opacity: logoOpacity, transform: [{ translateY: logoTranslate }] },
               ]}
             >
-              <Image source={logo} style={[styles.logo, logoStyle]} resizeMode="contain" />
+              <Image source={logo} style={styles.logo} resizeMode="cover" />
             </Animated.View>
           </View>
 
-          {/* Card */}
-          <View
-            style={styles.card}
-            onLayout={(e) => setCardHeight(e.nativeEvent.layout.height)}
-          >
+          <View style={styles.card}>
             <View style={{ marginBottom: 10 }}>
               <Text style={{ fontWeight: '600', marginTop: 12 }}>Escola</Text>
               <Text style={{ color: '#666' }}>
@@ -359,21 +326,26 @@ const styles = StyleSheet.create({
 
   header: {
     width: '100%',
-    paddingHorizontal: 0,   // container já tem padding 20
-    marginBottom: 12,
+    alignItems: 'center',
+    marginBottom: 28,
   },
 
   logoWrap: {
-    width: '100%',          // <- garante mesma largura do card
-    alignSelf: 'stretch',
-    alignItems: 'center',
+    borderRadius: 80,
+    backgroundColor: '#F5EBE0', // Fundo que mescla bem com a imagem
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 15,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 8,
+    borderWidth: 4,
+    borderColor: COLORS.white,
+    overflow: 'hidden', // Corta a imagem quadrada em um círculo perfeito
   },
 
   logo: {
-    width: '100%',          // <- igual ao card
-    maxWidth: '100%',
-    height: 170,            // controla altura sem estourar
-    borderRadius: 14,       // opcional (fica bonito)
+    width: 150,
+    height: 150,
   },
 
   card: {
