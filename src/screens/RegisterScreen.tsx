@@ -249,7 +249,7 @@ export default function RegisterScreen() {
                   mode="text"
                   onPress={() => navigation.navigate('Login')}
                   style={styles.secondaryBtn}
-                  textColor={COLORS.muted}
+                  textColor={COLORS.orange}
                   disabled={loading}
                 >
                   Voltar para o Login

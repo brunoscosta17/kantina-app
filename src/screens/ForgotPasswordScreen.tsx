@@ -195,10 +195,10 @@ export default function ForgotPasswordScreen() {
                   mode="text"
                   onPress={() => navigation.navigate('Login')}
                   style={styles.secondaryBtn}
-                  textColor={COLORS.muted}
                   disabled={loading}
                 >
-                  Lembrei minha senha! Voltar
+                  <Text style={{ color: COLORS.muted }}>Lembrei minha senha! </Text>
+                  <Text style={{ color: COLORS.orange, fontWeight: 'bold' }}>Voltar</Text>
                 </Button>
 
                 <View style={styles.footerRow}>
