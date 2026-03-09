@@ -8,11 +8,12 @@ import {
   ScrollView,
   StyleSheet,
   View,
-  useWindowDimensions
+  useWindowDimensions,
 } from 'react-native';
 import { Button, Checkbox, HelperText, Text, TextInput } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../store/auth';
+import pkg from '../../package.json';
 
 // Ajuste o caminho conforme seu projeto
 const logo = require('../../assets/kantina-logo.jpeg');
@@ -281,7 +282,7 @@ export default function LoginScreen() {
 
             {/* Footer row */}
             <View style={styles.footerRow}>
-              <Text style={styles.footerText}>Versão 1.0.0</Text>
+              <Text style={styles.footerText}>Versão {pkg.version}</Text>
               <Text style={styles.footerText}>PT</Text>
             </View>
           </View>

@@ -12,6 +12,7 @@ import { Button, HelperText, Text, TextInput } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import api from '../lib/api';
 import { useAuth } from '../store/auth';
+import pkg from '../../package.json';
 
 const logo = require('../../assets/kantina-logo.jpeg');
 
@@ -253,6 +254,11 @@ export default function RegisterScreen() {
                 >
                   Voltar para o Login
                 </Button>
+
+                <View style={styles.footerRow}>
+                  <Text style={styles.footerText}>Versão {pkg.version}</Text>
+                  <Text style={styles.footerText}>PT</Text>
+                </View>
               </>
             )}
           </View>
@@ -278,4 +284,6 @@ const styles = StyleSheet.create({
   primaryBtn: { borderRadius: 14, marginTop: 2 },
   secondaryBtn: { borderRadius: 14, marginTop: 10 },
   btnContent: { height: 48 },
+  footerRow: { marginTop: 16, flexDirection: 'row', justifyContent: 'space-between' },
+  footerText: { flex: 1, textAlign: 'center', color: '#9CA3AF', fontSize: 12 },
 });
