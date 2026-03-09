@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { FlatList, SafeAreaView, View } from 'react-native';
+import { FlatList, SafeAreaView, View, RefreshControl } from 'react-native';
 import { ActivityIndicator, Text } from 'react-native-paper';
 import { COLORS } from '../../../theme';
 import { useAuth } from '../../store/auth';
@@ -35,32 +35,42 @@ export default function WalletHistoryScreen() {
   const [wallets, setWallets] = useState<WalletWithStudent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
+  const fetchHistory = (mounted: { current: boolean }) => {
     if (role !== 'RESPONSAVEL' || !tenantId || !token) {
-      setLoading(false);
+      if (mounted.current) setLoading(false);
       return;
     }
 
-    let mounted = true;
-
-    (async () => {
+    import('../../services/wallets').then(async (mod) => {
       try {
-        const mod = await import('../../services/wallets');
         const data = await mod.getWalletsOfResponsible(token, tenantId);
-        if (mounted) setWallets(data as WalletWithStudent[]);
+        if (mounted.current) setWallets(data as WalletWithStudent[]);
       } catch (e) {
         console.error('Erro ao carregar carteiras do responsável', e);
-        if (mounted) setError('Falha ao carregar extrato.');
+        if (mounted.current) setError('Falha ao carregar extrato.');
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted.current) {
+          setLoading(false);
+          setRefreshing(false);
+        }
       }
-    })();
+    });
+  };
 
+  useEffect(() => {
+    const mounted = { current: true };
+    fetchHistory(mounted);
     return () => {
-      mounted = false;
+      mounted.current = false;
     };
   }, [role, tenantId, token]);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchHistory({ current: true });
+  };
 
   const entries = useMemo(() => {
     const all: Array<{
@@ -112,6 +122,7 @@ export default function WalletHistoryScreen() {
         <FlatList
           data={entries}
           keyExtractor={(item) => item.id}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[COLORS.greenDark]} />}
           renderItem={({ item }) => {
             const isCredit = item.direction === 'CREDIT';
             const sign = isCredit ? '+' : '-';

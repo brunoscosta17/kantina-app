@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SafeAreaView, ScrollView, View } from 'react-native';
+import { SafeAreaView, ScrollView, View, RefreshControl } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 import { COLORS } from '../../../theme';
 import api from '../../lib/api';
@@ -24,13 +24,28 @@ export default function WalletScreen() {
     }
   }, [tenantId]);
 
-  React.useEffect(() => {
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchWallets = () => {
     if (role === 'RESPONSAVEL' && token && tenantId) {
       import('../../services/wallets').then(({ getWalletsOfResponsible }) => {
-        getWalletsOfResponsible(token, tenantId).then(setWallets);
+        getWalletsOfResponsible(token, tenantId)
+          .then(setWallets)
+          .finally(() => setRefreshing(false));
       });
+    } else {
+      setRefreshing(false);
     }
+  };
+
+  React.useEffect(() => {
+    fetchWallets();
   }, [role, token, tenantId]);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchWallets();
+  };
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -63,7 +78,10 @@ export default function WalletScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.cream, padding: 16 }}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 24 }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[COLORS.greenDark]} />}
+      >
         {wallets.length === 0 ? (
           <Text style={{ color: COLORS.text, fontStyle: 'italic', marginBottom: 16 }}>Nenhum aluno vinculado ou sem carteira.</Text>
         ) : (
