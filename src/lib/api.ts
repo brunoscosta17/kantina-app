@@ -22,12 +22,10 @@ if (!API_URL) {
   API_URL = extraUrl;
 }
 
-// Para web: se dev, usa localhost; se não, usa produção
+// Para web: se não houver env, cai para localhost em dev ou prod_url em prod
 if (isWeb) {
-  if (isDev) {
-    API_URL = 'http://localhost:3000';
-  } else {
-    API_URL = PROD_API_URL;
+  if (!API_URL) {
+    API_URL = isDev ? 'http://localhost:3000' : PROD_API_URL;
   }
 } else {
   // Para mobile (iOS/Android): sempre usa produção, a menos que explicitamente definido
@@ -35,6 +33,7 @@ if (isWeb) {
     API_URL = PROD_API_URL;
   }
 }
+
 
 export { API_URL };
 

@@ -20,10 +20,7 @@ type PixConfigScreenProps = {
 };
 
 export default function PixConfigScreen({ onSave, initial, onCancel }: PixConfigScreenProps) {
-  const [provider, setProvider] = useState('gerencianet');
-  const [pixKey, setPixKey] = useState(initial?.pixKey ?? '');
-  const [gnClientId, setGnClientId] = useState(initial?.gerencianetClientId ?? '');
-  const [gnClientSecret, setGnClientSecret] = useState(initial?.gerencianetClientSecret ?? '');
+  const [provider, setProvider] = useState('mercadopago');
   const [mpAccessToken, setMpAccessToken] = useState(initial?.mercadopagoAccessToken ?? '');
   const [mpPublicKey, setMpPublicKey] = useState(initial?.mercadopagoPublicKey ?? '');
   const [minCharge, setMinCharge] = useState(
@@ -32,41 +29,38 @@ export default function PixConfigScreen({ onSave, initial, onCancel }: PixConfig
 
   return (
     <ScrollView contentContainerStyle={{ padding: 24 }}>
-      {/* <Text style={{ fontSize: 24, fontWeight: '700', color: COLORS.orange, marginBottom: 16 }}>Configuração Pix</Text> */}
-      <Text style={{ marginBottom: 8, fontSize: 16, fontWeight: '600', color: COLORS.text }}>Selecione o provedor Pix:</Text>
-      <RadioButton.Group onValueChange={setProvider} value={provider}>
-        <View style={{ gap: 4, marginBottom: 16 }}>
-          <RadioButton.Item label="Mercado Pago (Recomendado)" value="mercadopago" labelStyle={{ color: COLORS.text }} />
-          <RadioButton.Item label="Efí (Gerencianet)" value="gerencianet" labelStyle={{ color: COLORS.textVariant }} />
-        </View>
-      </RadioButton.Group>
-
-      {provider === 'mercadopago' && (
-        <View style={{ backgroundColor: '#f9f9f9', padding: 16, borderRadius: 8, marginBottom: 16 }}>
-           <Text style={{ marginBottom: 12, color: COLORS.textVariant, fontSize: 13 }}>
-            Insira suas credenciais de produção do Mercado Pago para receber pagamentos Pix diretos na sua conta.
-          </Text>
-          <TextInput mode="outlined" label="Access Token" value={mpAccessToken} onChangeText={setMpAccessToken} style={{ marginBottom: 12 }} secureTextEntry />
-          <TextInput mode="outlined" label="Public Key" value={mpPublicKey} onChangeText={setMpPublicKey} style={{ marginBottom: 8 }} />
-        </View>
-      )}
-
-      {provider === 'gerencianet' && (
-        <View style={{ backgroundColor: '#f9f9f9', padding: 16, borderRadius: 8, marginBottom: 16 }}>
-          <TextInput mode="outlined" label="Chave Pix" value={pixKey} onChangeText={setPixKey} style={{ marginBottom: 12 }} />
-          <TextInput mode="outlined" label="Client ID" value={gnClientId} onChangeText={setGnClientId} style={{ marginBottom: 12 }} />
-          <TextInput mode="outlined" label="Client Secret" value={gnClientSecret} onChangeText={setGnClientSecret} style={{ marginBottom: 8 }} secureTextEntry />
-        </View>
-      )}
-
-      <TextInput
-        mode="outlined"
-        label="Valor mínimo de recarga (R$)"
-        value={minCharge}
-        onChangeText={setMinCharge}
-        keyboardType="numeric"
-        style={{ marginBottom: 24 }}
-      />
+      <View style={{ backgroundColor: '#FFFFFF', padding: 16, borderRadius: 8, marginBottom: 16, elevation: 1, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 4 }}>
+         <Text style={{ marginBottom: 16, color: COLORS.text, fontSize: 13, lineHeight: 20 }}>
+          O Mercado Pago já está selecionado como provedor Pix recomendado. Insira suas credenciais de produção para receber pagamentos direto na sua conta.
+        </Text>
+        <TextInput 
+          mode="outlined" 
+          label="Access Token (Produção)" 
+          value={mpAccessToken} 
+          onChangeText={setMpAccessToken} 
+          style={{ marginBottom: 12, backgroundColor: '#FFFFFF' }} 
+          secureTextEntry 
+          theme={{ colors: { primary: COLORS.greenDark } }}
+        />
+        <TextInput 
+          mode="outlined" 
+          label="Public Key" 
+          value={mpPublicKey} 
+          onChangeText={setMpPublicKey} 
+          style={{ marginBottom: 16, backgroundColor: '#FFFFFF' }} 
+          theme={{ colors: { primary: COLORS.greenDark } }}
+        />
+        
+        <TextInput
+          mode="outlined"
+          label="Valor mínimo de recarga (R$)"
+          value={minCharge}
+          onChangeText={setMinCharge}
+          keyboardType="numeric"
+          style={{ marginBottom: 8, backgroundColor: '#FFFFFF' }}
+          theme={{ colors: { primary: COLORS.greenDark } }}
+        />
+      </View>
       
       <Button
         mode="contained"
@@ -75,9 +69,6 @@ export default function PixConfigScreen({ onSave, initial, onCancel }: PixConfig
         onPress={() =>
           onSave?.({
             pixProvider: provider,
-            pixKey,
-            gerencianetClientId: gnClientId,
-            gerencianetClientSecret: gnClientSecret,
             mercadopagoAccessToken: mpAccessToken,
             mercadopagoPublicKey: mpPublicKey,
             minChargeCents: Math.round(Number(minCharge.replace(',', '.')) * 100) || 0,
