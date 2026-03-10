@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, StyleSheet, View, Alert, PanResponder } from 'react-native';
+import { FlatList, StyleSheet, View, Alert, PanResponder, Animated, Dimensions } from 'react-native';
 import {
   ActivityIndicator,
   Button,
@@ -43,20 +43,41 @@ export default function PDVScreen() {
   const [catalog, setCatalog] = useState<CatalogItem[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [processing, setProcessing] = useState(false);
-  const [isCartExpanded, setIsCartExpanded] = useState(false);
+  const screenHeight = Dimensions.get('window').height;
+  const MIN_HEIGHT = screenHeight * 0.45; // ~45%
+  const MAX_HEIGHT = screenHeight * 0.85; // ~85%
+
+  const cartHeight = React.useRef(new Animated.Value(MIN_HEIGHT)).current;
+  const lastHeight = React.useRef(MIN_HEIGHT);
 
   const panResponder = React.useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
+      onPanResponderGrant: () => {
+        cartHeight.setOffset(lastHeight.current);
+        cartHeight.setValue(0);
+      },
+      onPanResponderMove: (evt, gestureState) => {
+        // Dragging UP means gestureState.dy is negative.
+        // So height increases by the negative amount of dy.
+        cartHeight.setValue(-gestureState.dy);
+      },
       onPanResponderRelease: (evt, gestureState) => {
-        if (gestureState.dy < -30) {
-          setIsCartExpanded(true); // Swipe up
-        } else if (gestureState.dy > 30) {
-          setIsCartExpanded(false); // Swipe down
-        } else {
-          // It was a tap (little movement)
-          setIsCartExpanded((prev) => !prev);
-        }
+        cartHeight.flattenOffset();
+        // @ts-ignore
+        let newHeight = cartHeight._value;
+        
+        // Prevent expanding infinitely
+        if (newHeight > MAX_HEIGHT) newHeight = MAX_HEIGHT;
+        if (newHeight < MIN_HEIGHT) newHeight = MIN_HEIGHT;
+
+        lastHeight.current = newHeight;
+
+        Animated.spring(cartHeight, {
+          toValue: newHeight,
+          useNativeDriver: false,
+          bounciness: 4,
+        }).start();
       },
     })
   ).current;
@@ -231,8 +252,8 @@ export default function PDVScreen() {
           />
         </View>
 
-        {/* Carrinho Area */}
-        <View style={[styles.cartArea, { maxHeight: isCartExpanded ? '85%' : '55%' }]}>
+        {/* Carrinho Area (Animated Bottom Sheet) */}
+        <Animated.View style={[styles.cartArea, { height: cartHeight }]}>
           <View 
             {...panResponder.panHandlers}
             style={{ paddingBottom: 4, backgroundColor: 'transparent' }}
@@ -284,7 +305,7 @@ export default function PDVScreen() {
               FATURAR
             </Button>
           </View>
-        </View>
+        </Animated.View>
       </View>
     </View>
   );
@@ -333,7 +354,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   cartArea: {
-    flexShrink: 1,
     backgroundColor: '#fff',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
