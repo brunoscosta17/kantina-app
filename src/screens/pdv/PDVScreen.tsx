@@ -13,9 +13,9 @@ import {
   useTheme,
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import api from '../lib/api';
-import { formatCurrency } from '../lib/currency';
-import { COLORS } from '../../theme';
+import api from '../../lib/api';
+import { formatCurrency } from '../../lib/currency';
+import { COLORS } from '../../../theme';
 
 type Student = {
   id: string;
