@@ -280,23 +280,28 @@ const styles = StyleSheet.create({
   },
   mainContent: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column', // Changed from row to column for mobile
   },
   catalogArea: {
-    flex: 2,
-    padding: 16,
+    flex: 1,
+    padding: 8,
   },
   catalogCard: {
     flex: 1,
-    margin: 4,
+    margin: 6,
     backgroundColor: '#fff',
+    borderRadius: 8,
   },
   cartArea: {
-    flex: 1.2,
+    maxHeight: '45%', // Limits cart height so catalog is always visible
     backgroundColor: '#fff',
-    borderLeftWidth: 1,
+    borderTopWidth: 1,
     borderColor: '#e0e0e0',
     padding: 16,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
   },
   cartRow: {
     flexDirection: 'row',
