@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, StyleSheet, View, Alert, TouchableOpacity } from 'react-native';
+import { FlatList, StyleSheet, View, Alert, PanResponder } from 'react-native';
 import {
   ActivityIndicator,
   Button,
@@ -44,6 +44,22 @@ export default function PDVScreen() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [processing, setProcessing] = useState(false);
   const [isCartExpanded, setIsCartExpanded] = useState(false);
+
+  const panResponder = React.useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderRelease: (evt, gestureState) => {
+        if (gestureState.dy < -30) {
+          setIsCartExpanded(true); // Swipe up
+        } else if (gestureState.dy > 30) {
+          setIsCartExpanded(false); // Swipe down
+        } else {
+          // It was a tap (little movement)
+          setIsCartExpanded((prev) => !prev);
+        }
+      },
+    })
+  ).current;
 
   useEffect(() => {
     // Carrega o catálogo logo no início para agilizar o PDV
@@ -217,10 +233,9 @@ export default function PDVScreen() {
 
         {/* Carrinho Area */}
         <View style={[styles.cartArea, { maxHeight: isCartExpanded ? '85%' : '55%' }]}>
-          <TouchableOpacity 
-            activeOpacity={0.7} 
-            onPress={() => setIsCartExpanded(!isCartExpanded)}
-            style={{ paddingBottom: 4 }}
+          <View 
+            {...panResponder.panHandlers}
+            style={{ paddingBottom: 4, backgroundColor: 'transparent' }}
           >
             <View style={styles.dragHandle} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
@@ -229,7 +244,7 @@ export default function PDVScreen() {
                 {cart.reduce((sum, item) => sum + item.qty, 0)} itens
               </Text>
             </View>
-          </TouchableOpacity>
+          </View>
           <FlatList
             data={cart}
             style={{ flexGrow: 0, flexShrink: 1 }}
