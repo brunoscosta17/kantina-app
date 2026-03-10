@@ -216,11 +216,18 @@ export default function PDVScreen() {
 
         {/* Carrinho Area */}
         <View style={styles.cartArea}>
-          <Text variant="titleMedium" style={{ marginBottom: 10 }}>Carrinho</Text>
+          <View style={styles.dragHandle} />
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <Text variant="titleLarge" style={{ fontWeight: 'bold' }}>Carrinho</Text>
+            <Text variant="labelLarge" style={{ color: COLORS.orange, fontWeight: 'bold' }}>
+              {cart.reduce((sum, item) => sum + item.qty, 0)} itens
+            </Text>
+          </View>
           <FlatList
             data={cart}
-            style={{ flex: 1 }}
+            style={{ flexGrow: 0, flexShrink: 1 }}
             contentContainerStyle={{ paddingBottom: 16 }}
+            showsVerticalScrollIndicator={false}
             keyExtractor={(c) => c.id}
             renderItem={({ item }) => (
               <View style={styles.cartRow}>
@@ -241,8 +248,8 @@ export default function PDVScreen() {
 
           <View style={styles.checkoutBox}>
             <View style={styles.totalRow}>
-              <Text variant="titleMedium">Total:</Text>
-              <Text variant="titleLarge" style={{ fontWeight: 'bold' }}>{formatCurrency(cartTotal)}</Text>
+              <Text variant="titleMedium" style={{ color: '#666' }}>Total:</Text>
+              <Text variant="headlineSmall" style={{ fontWeight: '900', color: COLORS.text }}>{formatCurrency(cartTotal)}</Text>
             </View>
             <Button
               mode="contained"
@@ -294,7 +301,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column', // Changed from row to column for mobile
   },
   catalogArea: {
-    flex: 3,
+    flex: 1,
     padding: 12,
   },
   catalogCard: {
@@ -304,15 +311,25 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   cartArea: {
-    flex: 2, // Takes stable 40% of the screen
+    flexShrink: 1,
+    maxHeight: '55%',
     backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderColor: '#e0e0e0',
-    padding: 16,
-    elevation: 8,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 20,
+    elevation: 16,
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: -4 },
+  },
+  dragHandle: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#CBD5E1',
+    borderRadius: 2,
+    alignSelf: 'center',
+    marginBottom: 16,
   },
   cartRow: {
     flexDirection: 'row',
