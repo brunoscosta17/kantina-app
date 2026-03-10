@@ -74,8 +74,12 @@ export default function PDVScreen() {
     try {
       const { data } = await api.get(`/wallets/${student.id}`);
       setStudentBalance(data.balanceCents);
-    } catch (e) {
-      Alert.alert('Erro', 'Não foi possível carregar o saldo do aluno.');
+    } catch (e: any) {
+      if (e.response && e.response.status === 404) {
+        setStudentBalance(0);
+      } else {
+        Alert.alert('Erro', 'Não foi possível carregar o saldo do aluno.');
+      }
     }
   };
 
@@ -115,7 +119,7 @@ export default function PDVScreen() {
         items: cart.map((c) => ({ itemId: c.id, qty: c.qty })),
       };
       const { data } = await api.post('/orders', payload);
-      
+
       // 2. Marcar como entregue imediatamente (PDV já entrega no balcão)
       await api.post(`/orders/${data.order.id}/fulfill`);
 
