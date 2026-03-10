@@ -103,7 +103,14 @@ export default function OrdersScreen() {
                       Pedido #{item.id.slice(0, 8).toUpperCase()}
                     </Text>
                     <Text style={{ color: COLORS.orange, marginTop: 4 }}>
-                      {item.status}
+                      {
+                        {
+                          CREATED: 'CRIADO',
+                          PAID: 'PAGO',
+                          FULFILLED: 'ENTREGUE',
+                          CANCELLED: 'CANCELADO',
+                        }[item.status] || item.status
+                      }
                     </Text>
                     <Text style={{ color: COLORS.text, marginTop: 4, fontSize: 12 }}>
                       {createdAt.toLocaleString('pt-BR')}
