@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, StyleSheet, View, Alert } from 'react-native';
+import { FlatList, StyleSheet, View, Alert, TouchableOpacity } from 'react-native';
 import {
   ActivityIndicator,
   Button,
@@ -43,6 +43,7 @@ export default function PDVScreen() {
   const [catalog, setCatalog] = useState<CatalogItem[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [processing, setProcessing] = useState(false);
+  const [isCartExpanded, setIsCartExpanded] = useState(false);
 
   useEffect(() => {
     // Carrega o catálogo logo no início para agilizar o PDV
@@ -137,7 +138,7 @@ export default function PDVScreen() {
 
   if (!selectedStudent) {
     return (
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
         <View style={styles.header}>
           {/* <Text variant="headlineMedium" style={{ fontWeight: 'bold' }}>PDV - Caixa</Text> */}
           <Text variant="bodyMedium" style={{ color: '#666' }}>
@@ -175,12 +176,12 @@ export default function PDVScreen() {
             ) : null
           }
         />
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.topBar}>
         <View>
           <Text variant="titleLarge" style={{ fontWeight: 'bold' }}>{selectedStudent.name}</Text>
@@ -215,14 +216,20 @@ export default function PDVScreen() {
         </View>
 
         {/* Carrinho Area */}
-        <View style={styles.cartArea}>
-          <View style={styles.dragHandle} />
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <Text variant="titleLarge" style={{ fontWeight: 'bold' }}>Carrinho</Text>
-            <Text variant="labelLarge" style={{ color: COLORS.orange, fontWeight: 'bold' }}>
-              {cart.reduce((sum, item) => sum + item.qty, 0)} itens
-            </Text>
-          </View>
+        <View style={[styles.cartArea, { maxHeight: isCartExpanded ? '85%' : '55%' }]}>
+          <TouchableOpacity 
+            activeOpacity={0.7} 
+            onPress={() => setIsCartExpanded(!isCartExpanded)}
+            style={{ paddingBottom: 4 }}
+          >
+            <View style={styles.dragHandle} />
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <Text variant="titleLarge" style={{ fontWeight: 'bold' }}>Carrinho</Text>
+              <Text variant="labelLarge" style={{ color: COLORS.orange, fontWeight: 'bold' }}>
+                {cart.reduce((sum, item) => sum + item.qty, 0)} itens
+              </Text>
+            </View>
+          </TouchableOpacity>
           <FlatList
             data={cart}
             style={{ flexGrow: 0, flexShrink: 1 }}
@@ -264,7 +271,7 @@ export default function PDVScreen() {
           </View>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -312,7 +319,6 @@ const styles = StyleSheet.create({
   },
   cartArea: {
     flexShrink: 1,
-    maxHeight: '55%',
     backgroundColor: '#fff',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
