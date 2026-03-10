@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { FlatList, SafeAreaView, View, RefreshControl } from 'react-native';
 import { ActivityIndicator, Text } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '../../../theme';
 import { useAuth } from '../../store/auth';
 
@@ -116,7 +117,8 @@ export default function WalletHistoryScreen() {
         </View>
       ) : entries.length === 0 ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ color: COLORS.text }}>Nenhuma movimentação encontrada.</Text>
+          <Icon name="wallet-outline" size={80} color="#CBD5E1" style={{ marginBottom: 16 }} />
+          <Text style={{ color: '#64748B', textAlign: 'center' }}>Nenhum aluno vinculado ou sem movimentações na carteira.</Text>
         </View>
       ) : (
         <FlatList
