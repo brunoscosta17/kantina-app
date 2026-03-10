@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { FlatList, SafeAreaView, Text, View } from 'react-native';
-import { ActivityIndicator } from 'react-native-paper';
+import { ActivityIndicator, Button } from 'react-native-paper';
 import { COLORS } from '../../../theme';
-import { listOrders } from '../../services/orders';
+import { listOrders, fulfillOrder } from '../../services/orders';
 import { useAuth } from '../../store/auth';
 
 type OrderItem = {
@@ -41,6 +41,18 @@ export default function OrdersScreen() {
       mounted = false;
     };
   }, []);
+
+  const handleFulfill = async (orderId: string) => {
+    try {
+      await fulfillOrder(orderId);
+      setOrders((prev) =>
+        prev.map((o) => (o.id === orderId ? { ...o, status: 'FULFILLED' } : o))
+      );
+    } catch (e) {
+      console.error('Erro ao confirmar entrega', e);
+      alert('Não foi possível confirmar a entrega do pedido.');
+    }
+  };
 
   if (!role) {
     return null;
@@ -83,26 +95,40 @@ export default function OrdersScreen() {
                   elevation: 2,
                 }}
               >
-                <Text
-                  style={{ color: COLORS.text, fontWeight: '600', fontSize: 16 }}
-                >
-                  Pedido #{item.id}
-                </Text>
-                <Text style={{ color: COLORS.orange, marginTop: 4 }}>
-                  {item.status}
-                </Text>
-                <Text style={{ color: COLORS.text, marginTop: 4, fontSize: 12 }}>
-                  {createdAt.toLocaleString('pt-BR')}
-                </Text>
-                <Text
-                  style={{
-                    color: COLORS.greenDark,
-                    marginTop: 4,
-                    fontWeight: '700',
-                  }}
-                >
-                  R$ {(totalCents / 100).toFixed(2).replace('.', ',')}
-                </Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <View>
+                    <Text
+                      style={{ color: COLORS.text, fontWeight: '600', fontSize: 16 }}
+                    >
+                      Pedido #{item.id.slice(0, 8).toUpperCase()}
+                    </Text>
+                    <Text style={{ color: COLORS.orange, marginTop: 4 }}>
+                      {item.status}
+                    </Text>
+                    <Text style={{ color: COLORS.text, marginTop: 4, fontSize: 12 }}>
+                      {createdAt.toLocaleString('pt-BR')}
+                    </Text>
+                    <Text
+                      style={{
+                        color: COLORS.greenDark,
+                        marginTop: 4,
+                        fontWeight: '700',
+                      }}
+                    >
+                      R$ {(totalCents / 100).toFixed(2).replace('.', ',')}
+                    </Text>
+                  </View>
+                  
+                  {item.status === 'PAID' && ['ADMIN', 'GESTOR', 'OPERADOR'].includes(role) && (
+                    <Button 
+                      mode="contained" 
+                      buttonColor={COLORS.greenDark} 
+                      onPress={() => handleFulfill(item.id)}
+                    >
+                      Entregar
+                    </Button>
+                  )}
+                </View>
               </View>
             );
           }}

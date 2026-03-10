@@ -4,12 +4,15 @@ import OrdersScreen from './orders/OrdersScreen';
 import SettingsScreen from './settings/SettingsScreen';
 import WalletScreen from './wallet/WalletScreen';
 import WalletHistoryScreen from './wallet/WalletHistoryScreen';
-// Importe outras telas conforme forem criadas
+import PDVScreen from './pdv/PDVScreen';
+import ReportsScreen from './reports/ReportsScreen';
 
 export type RoleKey = 'ADMIN' | 'GESTOR' | 'OPERADOR' | 'RESPONSAVEL' | 'ALUNO';
 
 export const roleTabs: Record<RoleKey, Array<{ name: string; component: any; icon: string }>> = {
   ADMIN: [
+    { name: 'Caixa PDV', component: PDVScreen, icon: 'cash-register' },
+    { name: 'Relatórios', component: ReportsScreen, icon: 'chart-bar' },
     { name: 'Catálogo', component: CatalogScreen, icon: 'food-fork-drink' },
     { name: 'Pedidos', component: OrdersScreen, icon: 'clipboard-list' },
     { name: 'Carteira', component: WalletScreen, icon: 'wallet' },
@@ -17,12 +20,15 @@ export const roleTabs: Record<RoleKey, Array<{ name: string; component: any; ico
     // Adicione novas telas aqui
   ],
   GESTOR: [
+    { name: 'Caixa PDV', component: PDVScreen, icon: 'cash-register' },
+    { name: 'Relatórios', component: ReportsScreen, icon: 'chart-bar' },
     { name: 'Catálogo', component: CatalogScreen, icon: 'food-fork-drink' },
     { name: 'Pedidos', component: OrdersScreen, icon: 'clipboard-list' },
     { name: 'Carteira', component: WalletScreen, icon: 'wallet' },
     { name: 'Configurações', component: SettingsScreen, icon: 'cog' },
   ],
   OPERADOR: [
+    { name: 'Caixa PDV', component: PDVScreen, icon: 'cash-register' },
     { name: 'Pedidos', component: OrdersScreen, icon: 'clipboard-list' },
     { name: 'Catálogo', component: CatalogScreen, icon: 'food-fork-drink' },
     { name: 'Configurações', component: SettingsScreen, icon: 'cog' },
