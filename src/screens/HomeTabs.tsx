@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -62,6 +62,11 @@ export default function HomeTabs({ navigation }: any) {
             elevation: 12,
             height: 70,
           },
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => setMenuVisible(true)} style={{ marginLeft: 20 }}>
+              <Icon name="menu" size={28} color={COLORS.orange} />
+            </TouchableOpacity>
+          ),
           headerRight: () => <NotificationBell />,
           tabBarItemStyle: {
             marginTop: 8,
@@ -78,6 +83,8 @@ export default function HomeTabs({ navigation }: any) {
         })}
       >
         {tabs.map((tab, index) => {
+          // Exibe na Tab Bar os 4 primeiros no máximo (se role permitir) ou 3, etc. Dependendo de mainTabs.
+          // Como fizemos mainTabs = tabs.slice(0, 3) antes, vamos reusar essa lógica.
           const isMain = index < 3;
           return (
             <Tab.Screen 
@@ -88,19 +95,6 @@ export default function HomeTabs({ navigation }: any) {
             />
           );
         })}
-
-        {secondaryTabs.length > 0 && (
-          <Tab.Screen
-            name="Mais"
-            component={View} // Componente dummy, nunca é renderizado
-            listeners={{
-              tabPress: e => {
-                e.preventDefault();
-                setMenuVisible(true);
-              }
-            }}
-          />
-        )}
       </Tab.Navigator>
       
       <SideMenu 

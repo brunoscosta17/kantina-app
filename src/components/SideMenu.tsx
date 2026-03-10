@@ -143,12 +143,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 16,
-    paddingHorizontal: 20,
+    paddingHorizontal: 30,
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
   },
   itemIcon: {
-    marginRight: 16,
+    marginRight: 24,
   },
   itemText: {
     flex: 1,
