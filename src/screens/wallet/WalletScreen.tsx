@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SafeAreaView, ScrollView, View, RefreshControl } from 'react-native';
 import { Button, Text } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '../../../theme';
 import api from '../../lib/api';
 import { useAuth } from '../../store/auth';
@@ -83,7 +84,10 @@ export default function WalletScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[COLORS.greenDark]} />}
       >
         {wallets.length === 0 ? (
-          <Text style={{ color: COLORS.text, fontStyle: 'italic', marginBottom: 16 }}>Nenhum aluno vinculado ou sem carteira.</Text>
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
+            <Icon name="wallet-outline" size={80} color="#CBD5E1" style={{ marginBottom: 16 }} />
+            <Text style={{ color: '#64748B', textAlign: 'center' }}>Nenhum aluno vinculado ou sem carteira.</Text>
+          </View>
         ) : (
           wallets.map((w) => (
             <View
