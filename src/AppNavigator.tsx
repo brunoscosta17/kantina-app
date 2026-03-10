@@ -24,7 +24,11 @@ export default function AppNavigator() {
           <Stack.Screen 
             name="Notifications" 
             component={NotificationsScreen} 
-            options={{ headerShown: true, title: 'Central de Avisos' }} 
+            options={{ 
+              headerShown: true, 
+              title: 'Notificações',
+              headerBackButtonDisplayMode: 'minimal',
+            }} 
           />
         </Stack.Group>
       ) : (

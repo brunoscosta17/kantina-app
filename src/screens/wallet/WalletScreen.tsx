@@ -80,11 +80,11 @@ export default function WalletScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.cream, padding: 16 }}>
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 24 }}
+        contentContainerStyle={{ paddingBottom: 24, flexGrow: 1 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[COLORS.greenDark]} />}
       >
         {wallets.length === 0 ? (
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <Icon name="wallet-outline" size={64} color="#ccc" />
             <Text style={{ color: COLORS.textVariant, marginTop: 16, textAlign: 'center' }}>Nenhum aluno vinculado ou sem carteira.</Text>
           </View>
