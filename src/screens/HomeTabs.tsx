@@ -26,6 +26,7 @@ const Stack = createNativeStackNavigator();
 
 export default function HomeTabs({ navigation }: any) {
   const role = useAuth((s) => s.role) as RoleKey;
+  const logout = useAuth((s) => s.logout);
   const tabs = roleTabs[role] ?? roleTabs['ALUNO'];
   const [menuVisible, setMenuVisible] = useState(false);
 
@@ -101,6 +102,7 @@ export default function HomeTabs({ navigation }: any) {
         visible={menuVisible} 
         onClose={() => setMenuVisible(false)} 
         items={menuItems} 
+        onLogout={logout}
       />
     </>
   );

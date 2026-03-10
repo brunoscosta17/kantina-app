@@ -22,12 +22,13 @@ type SideMenuProps = {
   visible: boolean;
   onClose: () => void;
   items: MenuItem[];
+  onLogout?: () => void;
 };
 
 const { width, height } = Dimensions.get('window');
 const MENU_WIDTH = width * 0.75; // 75% of screen width
 
-export default function SideMenu({ visible, onClose, items }: SideMenuProps) {
+export default function SideMenu({ visible, onClose, items, onLogout }: SideMenuProps) {
   const slideAnim = useRef(new Animated.Value(-MENU_WIDTH)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -96,6 +97,24 @@ export default function SideMenu({ visible, onClose, items }: SideMenuProps) {
               </TouchableOpacity>
             ))}
           </View>
+
+          {onLogout && (
+            <View style={styles.footer}>
+              <Divider />
+              <TouchableOpacity
+                style={[styles.item, { borderBottomWidth: 0, paddingVertical: 20 }]}
+                onPress={() => {
+                  onClose();
+                  onLogout();
+                }}
+              >
+                <Icon name="logout" size={28} color="#E53E3E" style={styles.itemIcon} />
+                <Text variant="bodyLarge" style={[styles.itemText, { color: '#E53E3E', fontWeight: 'bold' }]}>
+                  Sair da Conta
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </Animated.View>
       </View>
     </Modal>
@@ -154,5 +173,10 @@ const styles = StyleSheet.create({
     flex: 1,
     fontWeight: '500',
     color: COLORS.text,
+  },
+  footer: {
+    marginTop: 'auto', // Pushes the footer to the bottom
+    paddingBottom: 20,
+    backgroundColor: '#fff',
   },
 });
