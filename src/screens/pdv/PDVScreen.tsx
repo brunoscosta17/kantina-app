@@ -168,7 +168,10 @@ export default function PDVScreen() {
           )}
           ListEmptyComponent={
             searchQuery.length >= 3 && !searching ? (
-              <Text style={{ textAlign: 'center', marginTop: 20 }}>Nenhum aluno encontrado.</Text>
+              <View style={{ alignItems: 'center', marginTop: 40 }}>
+                <Icon source="account-search-outline" size={64} color="#ccc" />
+                <Text style={{ color: COLORS.textVariant, marginTop: 16 }}>Nenhum aluno encontrado.</Text>
+              </View>
             ) : null
           }
         />

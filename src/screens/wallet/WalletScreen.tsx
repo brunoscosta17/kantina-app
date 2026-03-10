@@ -85,8 +85,8 @@ export default function WalletScreen() {
       >
         {wallets.length === 0 ? (
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
-            <Icon name="wallet-outline" size={80} color="#CBD5E1" style={{ marginBottom: 16 }} />
-            <Text style={{ color: '#64748B', textAlign: 'center' }}>Nenhum aluno vinculado ou sem carteira.</Text>
+            <Icon name="wallet-outline" size={64} color="#ccc" />
+            <Text style={{ color: COLORS.textVariant, marginTop: 16, textAlign: 'center' }}>Nenhum aluno vinculado ou sem carteira.</Text>
           </View>
         ) : (
           wallets.map((w) => (

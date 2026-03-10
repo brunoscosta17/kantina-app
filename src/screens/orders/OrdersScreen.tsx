@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FlatList, SafeAreaView, Text, View } from 'react-native';
 import { ActivityIndicator, Button } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '../../../theme';
 import { listOrders, fulfillOrder } from '../../services/orders';
 import { useAuth } from '../../store/auth';
@@ -69,8 +70,9 @@ export default function OrdersScreen() {
           <Text style={{ color: COLORS.text }}>{error}</Text>
         </View>
       ) : orders.length === 0 ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ color: COLORS.text }}>Nenhum pedido encontrado.</Text>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name="clipboard-text-outline" size={64} color="#ccc" />
+          <Text style={{ color: COLORS.textVariant, marginTop: 16 }}>Nenhum pedido encontrado no momento.</Text>
         </View>
       ) : (
         <FlatList

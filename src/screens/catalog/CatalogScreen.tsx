@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FlatList, SafeAreaView, View } from 'react-native';
 import { ActivityIndicator, Text } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '../../../theme';
 import { getCatalog, type CatalogItem } from '../../services/catalog';
 
@@ -38,6 +39,11 @@ export default function CatalogScreen() {
       ) : error ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Text style={{ color: COLORS.text }}>{error}</Text>
+        </View>
+      ) : items.length === 0 ? (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name="food-outline" size={64} color="#ccc" />
+          <Text style={{ color: COLORS.textVariant, marginTop: 16 }}>Nenhum produto encontrado no catálogo.</Text>
         </View>
       ) : (
         <FlatList
