@@ -44,7 +44,7 @@ export default function PDVScreen() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [processing, setProcessing] = useState(false);
   const screenHeight = Dimensions.get('window').height;
-  const MIN_HEIGHT = screenHeight * 0.45; // ~45%
+  const MIN_HEIGHT = 160; // Just enough for Carrinho Header + Total + Button
   const MAX_HEIGHT = screenHeight * 0.85; // ~85%
 
   const cartHeight = React.useRef(new Animated.Value(MIN_HEIGHT)).current;
@@ -237,7 +237,7 @@ export default function PDVScreen() {
             data={catalog}
             keyExtractor={(c) => c.id}
             numColumns={2}
-            contentContainerStyle={{ paddingBottom: 24, paddingHorizontal: 4 }}
+            contentContainerStyle={{ paddingBottom: MIN_HEIGHT + 24, paddingHorizontal: 4 }}
             showsVerticalScrollIndicator={false}
             renderItem={({ item }) => (
               <Card style={styles.catalogCard} onPress={() => addToCart(item)}>
