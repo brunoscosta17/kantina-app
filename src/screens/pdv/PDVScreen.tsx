@@ -139,7 +139,7 @@ export default function PDVScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <Text variant="headlineMedium" style={{ fontWeight: 'bold' }}>PDV - Caixa</Text>
+          {/* <Text variant="headlineMedium" style={{ fontWeight: 'bold' }}>PDV - Caixa</Text> */}
           <Text variant="bodyMedium" style={{ color: '#666' }}>
             Busque o aluno por Nome ou Código de Acesso
           </Text>
@@ -194,11 +194,13 @@ export default function PDVScreen() {
       <View style={styles.mainContent}>
         {/* Catálogo List */}
         <View style={styles.catalogArea}>
-          <Text variant="titleMedium" style={{ marginBottom: 10 }}>Cardápio</Text>
+          <Text variant="titleMedium" style={{ marginBottom: 10, paddingHorizontal: 4 }}>Cardápio</Text>
           <FlatList
             data={catalog}
             keyExtractor={(c) => c.id}
             numColumns={2}
+            contentContainerStyle={{ paddingBottom: 24, paddingHorizontal: 4 }}
+            showsVerticalScrollIndicator={false}
             renderItem={({ item }) => (
               <Card style={styles.catalogCard} onPress={() => addToCart(item)}>
                 <Card.Content>
@@ -217,6 +219,8 @@ export default function PDVScreen() {
           <Text variant="titleMedium" style={{ marginBottom: 10 }}>Carrinho</Text>
           <FlatList
             data={cart}
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingBottom: 16 }}
             keyExtractor={(c) => c.id}
             renderItem={({ item }) => (
               <View style={styles.cartRow}>
@@ -263,7 +267,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F7F9FC',
   },
   header: {
-    padding: 20,
+    paddingHorizontal: 20,
     backgroundColor: '#fff',
   },
   searchbar: {
@@ -290,8 +294,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column', // Changed from row to column for mobile
   },
   catalogArea: {
-    flex: 1,
-    padding: 8,
+    flex: 3,
+    padding: 12,
   },
   catalogCard: {
     flex: 1,
@@ -300,7 +304,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   cartArea: {
-    maxHeight: '45%', // Limits cart height so catalog is always visible
+    flex: 2, // Takes stable 40% of the screen
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderColor: '#e0e0e0',
@@ -320,7 +324,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   checkoutBox: {
-    marginTop: 'auto',
     paddingTop: 16,
     borderTopWidth: 1,
     borderColor: '#e0e0e0',
