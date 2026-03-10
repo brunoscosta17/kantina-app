@@ -28,7 +28,7 @@ export default function AppNavigator() {
             options={{ 
               headerShown: true, 
               title: 'Notificações',
-              headerTitleStyle: { color: COLORS.orange, fontWeight: 'bold' },
+              headerTitleStyle: { color: COLORS.orange, fontWeight: '700', fontSize: 28 },
               headerTintColor: COLORS.orange,
               headerBackButtonDisplayMode: 'minimal',
             }} 
