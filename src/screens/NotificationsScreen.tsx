@@ -49,12 +49,13 @@ export default function NotificationsScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.cream, padding: 16 }}>
-      <Text style={{ fontSize: 24, fontWeight: '700', color: COLORS.orange, marginBottom: 16 }}>Notificações</Text>
-      
-      {loading ? (
-        <ActivityIndicator style={{ marginTop: 40 }} />
-      ) : notifications.length === 0 ? (
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.cream }}>
+      <View style={{ padding: 16, flex: 1 }}>
+        <Text style={{ fontSize: 24, fontWeight: '700', color: COLORS.orange, marginBottom: 24 }}>Notificações</Text>
+        
+        {loading ? (
+          <ActivityIndicator />
+        ) : notifications.length === 0 ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="bell-off-outline" size={64} color="#ccc" />
           <Text style={{ color: COLORS.textVariant, marginTop: 16 }}>Você não possui notificações no momento.</Text>
@@ -92,6 +93,7 @@ export default function NotificationsScreen() {
           )}
         />
       )}
+      </View>
     </SafeAreaView>
   );
 }

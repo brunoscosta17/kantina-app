@@ -7,6 +7,7 @@ import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import StudentLoginScreen from './screens/StudentLoginScreen';
 import SelectSchoolScreen from './screens/SelectSchoolScreen';
 import { useAuth } from './store/auth';
+import { COLORS } from '../theme';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,7 +27,9 @@ export default function AppNavigator() {
             component={NotificationsScreen} 
             options={{ 
               headerShown: true, 
-              title: 'Notificações',
+              headerTitle: '',
+              headerShadowVisible: false,
+              headerStyle: { backgroundColor: COLORS.cream },
               headerBackButtonDisplayMode: 'minimal',
             }} 
           />
