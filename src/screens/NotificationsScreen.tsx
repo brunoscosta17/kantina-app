@@ -51,8 +51,6 @@ export default function NotificationsScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.cream }}>
       <View style={{ padding: 16, flex: 1 }}>
-        <Text style={{ fontSize: 24, fontWeight: '700', color: COLORS.orange, marginBottom: 24 }}>Notificações</Text>
-        
         {loading ? (
           <ActivityIndicator />
         ) : notifications.length === 0 ? (

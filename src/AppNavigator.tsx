@@ -27,9 +27,9 @@ export default function AppNavigator() {
             component={NotificationsScreen} 
             options={{ 
               headerShown: true, 
-              headerTitle: '',
-              headerShadowVisible: false,
-              headerStyle: { backgroundColor: COLORS.cream },
+              title: 'Notificações',
+              headerTitleStyle: { color: COLORS.orange, fontWeight: 'bold' },
+              headerTintColor: COLORS.orange,
               headerBackButtonDisplayMode: 'minimal',
             }} 
           />
