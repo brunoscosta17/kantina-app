@@ -36,7 +36,7 @@ export default function HomeTabs({ navigation }: any) {
     name: t.name,
     icon: t.icon,
     onPress: () => {
-      navigation.navigate(t.name);
+      navigation.navigate('HomeTabs', { screen: t.name });
     }
   }));
 
@@ -91,7 +91,7 @@ export default function HomeTabs({ navigation }: any) {
               key={tab.name} 
               name={tab.name} 
               component={tab.component}
-              options={!isMain ? { tabBarButton: () => null } : {}}
+              options={!isMain ? { tabBarItemStyle: { display: 'none' } } : { tabBarItemStyle: { marginTop: 8 } }}
             />
           );
         })}
